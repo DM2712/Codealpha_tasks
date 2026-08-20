@@ -1,0 +1,38 @@
+{
+  "name": "shopsphere-backend",
+  "version": "1.0.0",
+  "description": "Express.js REST API for ShopSphere E-Commerce Application",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "node src/tests/product.test.js",
+    "test:db": "node src/tests/supabase.test.js"
+  },
+  "dependencies": {
+    "@clerk/clerk-react": "^5.61.9",
+    "@clerk/express": "^2.1.57",
+    "@supabase/ssr": "^0.12.4",
+    "@supabase/supabase-js": "^2.112.3",
+    "axios": "^1.7.9",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  },
+  "keywords": [
+    "express",
+    "nodejs",
+    "api",
+    "clerk",
+    "supabase",
+    "ecommerce"
+  ],
+  "author": "CodeAlpha Developer",
+  "license": "MIT"
+}
