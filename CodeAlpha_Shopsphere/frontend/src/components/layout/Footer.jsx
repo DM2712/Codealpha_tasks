@@ -42,7 +42,7 @@ export const Footer = () => {
                 <RotateCcw className="w-6 h-6" />
               </div>
               <div className="min-w-0">
-                <h4 className="text-xs font-bold text-on-background uppercase tracking-wider">30-Day Returns</h4>
+                <h4 className="text-xs font-bold text-on-background uppercase tracking-wider">7-Day Returns</h4>
                 <p className="text-xs text-secondary truncate">Hassle-free money back</p>
               </div>
             </div>

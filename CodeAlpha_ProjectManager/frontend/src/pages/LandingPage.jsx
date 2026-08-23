@@ -397,40 +397,94 @@ const LandingPage = () => {
       </section>
 
       {/* 7. PROFESSIONAL FOOTER */}
-      <footer className="border-top py-5 bg-white text-secondary">
-        <div className="container">
-          <div className="row g-4 justify-content-between align-items-center">
-            <div className="col-md-6 text-center text-md-start">
-              <div className="d-flex align-items-center justify-content-center justify-content-md-start gap-2 mb-2">
-                <div className="header-brand-icon" style={{ width: '28px', height: '28px' }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
-                    space_dashboard
-                  </span>
+      <footer className="border-top bg-white text-secondary">
+        {/* Footer Main Grid */}
+        <div className="container py-5">
+          <div className="row g-4">
+            {/* Brand Column */}
+            <div className="col-lg-4">
+              <div className="d-flex align-items-center gap-2 mb-3">
+                <div className="header-brand-icon" style={{ width: '30px', height: '30px' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>space_dashboard</span>
                 </div>
-                <span className="fw-bold text-dark" style={{ fontFamily: 'var(--font-display)' }}>
+                <span className="fw-bold text-dark" style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem' }}>
                   ProjectManager
                 </span>
+                <span className="header-tag">CodeAlpha</span>
               </div>
-              <p className="small text-muted mb-0">
-                A collaborative project management platform built for modern agile teams.
+              <p className="small text-muted lh-lg mb-3" style={{ maxWidth: '280px' }}>
+                A full-stack collaborative workspace built for modern agile product and engineering teams. Powered by React, Express, Clerk, and Supabase.
               </p>
+              <div className="d-flex gap-2">
+                <Link to="/sign-up" className="btn-saas-primary" style={{ fontSize: '0.8rem', padding: '0.35rem 0.85rem' }}>
+                  Get Started Free
+                </Link>
+                <Link to="/help" className="btn-saas-secondary" style={{ fontSize: '0.8rem', padding: '0.35rem 0.85rem' }}>
+                  Help Center
+                </Link>
+              </div>
             </div>
 
-            <div className="col-md-6 text-center text-md-end small">
-              <div className="d-flex justify-content-center justify-content-md-end gap-3 mb-2">
-                <Link to="/dashboard" className="text-decoration-none text-secondary hover:text-primary">
-                  Dashboard
-                </Link>
-                <Link to="/sign-in" className="text-decoration-none text-secondary hover:text-primary">
-                  Sign In
-                </Link>
-                <Link to="/sign-up" className="text-decoration-none text-secondary hover:text-primary">
-                  Sign Up
-                </Link>
+            {/* Product Links */}
+            <div className="col-sm-6 col-lg-2">
+              <h6 className="fw-bold text-dark text-uppercase small font-mono mb-3">Product</h6>
+              <ul className="list-unstyled d-flex flex-column gap-2">
+                <li><Link to="/" className="text-secondary text-decoration-none small hover:text-primary">Home</Link></li>
+                <li><Link to="/dashboard" className="text-secondary text-decoration-none small hover:text-primary">Dashboard</Link></li>
+                <li><Link to="/sign-up" className="text-secondary text-decoration-none small hover:text-primary">Sign Up</Link></li>
+                <li><Link to="/sign-in" className="text-secondary text-decoration-none small hover:text-primary">Sign In</Link></li>
+              </ul>
+            </div>
+
+            {/* Support Links */}
+            <div className="col-sm-6 col-lg-2">
+              <h6 className="fw-bold text-dark text-uppercase small font-mono mb-3">Support</h6>
+              <ul className="list-unstyled d-flex flex-column gap-2">
+                <li><Link to="/help" className="text-secondary text-decoration-none small hover:text-primary">Help Center</Link></li>
+                <li><Link to="/help#contact-form" className="text-secondary text-decoration-none small hover:text-primary">Contact Us</Link></li>
+                <li><Link to="/return-policy" className="text-secondary text-decoration-none small hover:text-primary">Refund Policy</Link></li>
+                <li><a href="mailto:support@projectmanager.io" className="text-secondary text-decoration-none small hover:text-primary">Email Support</a></li>
+              </ul>
+            </div>
+
+            {/* Legal Links */}
+            <div className="col-sm-6 col-lg-2">
+              <h6 className="fw-bold text-dark text-uppercase small font-mono mb-3">Legal</h6>
+              <ul className="list-unstyled d-flex flex-column gap-2">
+                <li><Link to="/privacy-policy" className="text-secondary text-decoration-none small hover:text-primary">Privacy Policy</Link></li>
+                <li><Link to="/return-policy" className="text-secondary text-decoration-none small hover:text-primary">Return Policy</Link></li>
+                <li><Link to="/help" className="text-secondary text-decoration-none small hover:text-primary">Terms of Service</Link></li>
+              </ul>
+            </div>
+
+            {/* Trust Badges */}
+            <div className="col-sm-6 col-lg-2">
+              <h6 className="fw-bold text-dark text-uppercase small font-mono mb-3">Security</h6>
+              <div className="d-flex flex-column gap-2">
+                <div className="p-2 bg-success-subtle border border-success border-opacity-25 rounded-2 text-center small">
+                  <div className="fw-bold text-success" style={{ fontSize: '0.75rem' }}>✅ 7-Day Refunds</div>
+                </div>
+                <div className="p-2 bg-primary-subtle border border-primary border-opacity-25 rounded-2 text-center small">
+                  <div className="fw-bold text-primary" style={{ fontSize: '0.75rem' }}>🔒 Clerk Auth</div>
+                </div>
+                <div className="p-2 bg-light border rounded-2 text-center small">
+                  <div className="fw-bold text-secondary" style={{ fontSize: '0.75rem' }}>🗄️ AES-256 Encrypted</div>
+                </div>
               </div>
-              <div className="text-muted" style={{ fontSize: '0.75rem' }}>
-                © {new Date().getFullYear()} ProjectManager
-              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Bottom Bar */}
+        <div className="border-top py-3 bg-light">
+          <div className="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+            <div className="text-muted" style={{ fontSize: '0.78rem' }}>
+              © {new Date().getFullYear()} ProjectManager. Built for the <strong>CodeAlpha Full-Stack Internship</strong>.
+            </div>
+            <div className="d-flex gap-3" style={{ fontSize: '0.78rem' }}>
+              <Link to="/privacy-policy" className="text-muted text-decoration-none hover:text-primary">Privacy</Link>
+              <Link to="/return-policy" className="text-muted text-decoration-none hover:text-primary">Returns</Link>
+              <Link to="/help" className="text-muted text-decoration-none hover:text-primary">Help</Link>
             </div>
           </div>
         </div>
