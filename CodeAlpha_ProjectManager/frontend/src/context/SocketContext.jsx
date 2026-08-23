@@ -1,53 +1,80 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
 
 const SocketContext = createContext(null);
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const socketRef = useRef(null);
 
   useEffect(() => {
-    const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
-    const newSocket = io(socketUrl, {
-      transports: ['websocket', 'polling'],
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-    });
+    const rawUrl = import.meta.env.VITE_SOCKET_URL || '';
+    const isHttps = typeof window !== 'undefined' && window.location.protocol === 'https:';
+    const isLocalhostHost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
-    setSocket(newSocket);
+    // If on HTTPS and socket URL points to insecure http://localhost, skip to avoid Mixed Content errors
+    if (isHttps && !isLocalhostHost && (!rawUrl || rawUrl.includes('localhost') || rawUrl.includes('127.0.0.1') || rawUrl.startsWith('http:'))) {
+      // Standalone / preview mode without dedicated WSS server
+      return;
+    }
 
-    newSocket.on('connect', () => {
-      console.log('[SocketProvider] Connected to real-time server');
-    });
+    const socketUrl = rawUrl || 'http://localhost:5000';
 
-    newSocket.on('connect_error', (err) => {
-      console.warn('[SocketProvider] Connection error:', err.message);
-    });
+    try {
+      const newSocket = io(socketUrl, {
+        transports: ['websocket', 'polling'],
+        reconnectionAttempts: 2,
+        reconnectionDelay: 2000,
+        timeout: 5000,
+        autoConnect: true,
+      });
 
-    return () => {
-      newSocket.disconnect();
-    };
+      socketRef.current = newSocket;
+      setSocket(newSocket);
+
+      newSocket.on('connect', () => {
+        setIsConnected(true);
+      });
+
+      newSocket.on('disconnect', () => {
+        setIsConnected(false);
+      });
+
+      newSocket.on('connect_error', () => {
+        // Gracefully handle without console flood
+        setIsConnected(false);
+      });
+
+      return () => {
+        if (newSocket) {
+          newSocket.disconnect();
+        }
+      };
+    } catch {
+      // Quiet fallback if socket.io client fails
+    }
   }, []);
 
   const joinProject = (projectId) => {
-    if (socket && projectId) {
-      socket.emit('join:project', projectId);
+    if (socketRef.current && isConnected && projectId) {
+      socketRef.current.emit('join:project', projectId);
     }
   };
 
   const leaveProject = (projectId) => {
-    if (socket && projectId) {
-      socket.emit('leave:project', projectId);
+    if (socketRef.current && isConnected && projectId) {
+      socketRef.current.emit('leave:project', projectId);
     }
   };
 
   return (
-    <SocketContext.Provider value={{ socket, joinProject, leaveProject }}>
+    <SocketContext.Provider value={{ socket, isConnected, joinProject, leaveProject }}>
       {children}
     </SocketContext.Provider>
   );
 };
 
 export const useSocket = () => {
-  return useContext(SocketContext) || { socket: null, joinProject: () => {}, leaveProject: () => {} };
+  return useContext(SocketContext) || { socket: null, isConnected: false, joinProject: () => {}, leaveProject: () => {} };
 };

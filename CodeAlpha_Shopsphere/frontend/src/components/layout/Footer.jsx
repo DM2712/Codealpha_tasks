@@ -123,7 +123,7 @@ export const Footer = () => {
           {/* Column 3: Account & Help (3 cols) */}
           <div className="md:col-span-3 lg:col-span-3 space-y-3.5">
             <h5 className="text-xs font-bold uppercase tracking-wider text-on-background">
-              Account & Help
+              Account &amp; Help
             </h5>
             <ul className="space-y-2.5 text-xs text-secondary">
               <li>
@@ -142,10 +142,19 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
-                <span className="text-secondary/70 cursor-default">Help Center</span>
+                <Link to="/help" className="hover:text-primary transition-colors">
+                  Help Center
+                </Link>
               </li>
               <li>
-                <span className="text-secondary/70 cursor-default">Returns Policy</span>
+                <Link to="/return-policy" className="hover:text-primary transition-colors">
+                  Returns &amp; Refunds
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy-policy" className="hover:text-primary transition-colors">
+                  Privacy Policy
+                </Link>
               </li>
             </ul>
           </div>
@@ -161,9 +170,9 @@ export const Footer = () => {
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-6">
-            <span className="hover:text-primary transition-colors cursor-pointer">Privacy Policy</span>
-            <span className="hover:text-primary transition-colors cursor-pointer">Terms of Service</span>
-            <span className="hover:text-primary transition-colors cursor-pointer">Security</span>
+            <Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+            <Link to="/return-policy" className="hover:text-primary transition-colors">Returns Policy</Link>
+            <Link to="/help" className="hover:text-primary transition-colors">Help Center</Link>
           </div>
         </div>
       </div>

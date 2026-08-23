@@ -21,6 +21,9 @@ const OrderConfirmationPage = lazy(() => import('./pages/OrderConfirmationPage')
 const MyOrdersPage = lazy(() => import('./pages/MyOrdersPage').then(m => ({ default: m.MyOrdersPage })));
 const ProfilePage = lazy(() => import('./pages/ProfilePage').then(m => ({ default: m.ProfilePage })));
 const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage').then(m => ({ default: m.AdminDashboardPage })));
+const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage').then(m => ({ default: m.PrivacyPolicyPage })));
+const ReturnPolicyPage = lazy(() => import('./pages/ReturnPolicyPage').then(m => ({ default: m.ReturnPolicyPage })));
+const HelpPage = lazy(() => import('./pages/HelpPage').then(m => ({ default: m.HelpPage })));
 
 // Ultra-lightweight route fallback component
 const RouteLoadingFallback = () => (
@@ -87,6 +90,11 @@ function App() {
                       
                       {/* Admin Route */}
                       <Route path="/admin" element={<AdminDashboardPage />} />
+
+                      {/* Legal & Help Public Routes */}
+                      <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                      <Route path="/return-policy" element={<ReturnPolicyPage />} />
+                      <Route path="/help" element={<HelpPage />} />
 
                       {/* Fallback */}
                       <Route path="*" element={<Navigate to="/" replace />} />

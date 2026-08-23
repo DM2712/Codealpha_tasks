@@ -17,6 +17,21 @@ def is_port_open(port):
     s.settimeout(1.0)
     return s.connect_ex(('127.0.0.1', port)) == 0
 
+def kill_processes_on_ports(ports):
+  """Kill any stale processes listening on specified ports."""
+  if sys.platform == "win32":
+    for port in ports:
+      try:
+        out = subprocess.check_output(f"netstat -ano | findstr :{port}", shell=True).decode('utf-8', errors='ignore')
+        for line in out.strip().split('\n'):
+          parts = line.strip().split()
+          if len(parts) >= 5 and ('LISTENING' in line or 'ESTABLISHED' in line):
+            pid = parts[-1]
+            if pid.isdigit() and int(pid) > 4:
+              subprocess.run(f"taskkill /F /PID {pid}", shell=True, capture_output=True)
+      except Exception:
+        pass
+
 def wait_for_port(port, timeout=30):
   """Wait until a TCP port starts listening."""
   start = time.time()
@@ -31,38 +46,37 @@ def main():
   print("[ORCHESTRATOR] ProjectManager Automated Selenium Test Suite")
   print("=" * 65)
 
+  # Kill any old background servers to ensure clean test environment
+  print("\n[INFO] Ensuring clean ports for ProjectManager...")
+  kill_processes_on_ports([5000, 5173])
+  time.sleep(2)
+
   backend_proc = None
   frontend_proc = None
 
-  # 1. Start Backend if not already running on port 5000
-  if not is_port_open(5000):
-    print("\n[INFO] Starting Backend Server on port 5000...")
-    backend_proc = subprocess.Popen(
-        ["npm", "start", "--prefix", "backend"],
-        cwd=ROOT_DIR,
-        shell=True
-    )
-    if not wait_for_port(5000, 25):
-      print("  [WARN] Backend port 5000 took longer to open, continuing...")
-    else:
-      print("  [OK] Backend Server is ready on http://localhost:5000")
+  # 1. Start Backend on port 5000
+  print("[INFO] Starting ProjectManager Backend Server on port 5000...")
+  backend_proc = subprocess.Popen(
+      ["npm", "start", "--prefix", "backend"],
+      cwd=ROOT_DIR,
+      shell=True
+  )
+  if not wait_for_port(5000, 25):
+    print("  [WARN] Backend port 5000 took longer to open, continuing...")
   else:
-    print("\n[INFO] Backend Server is already running.")
+    print("  [OK] ProjectManager Backend is ready on http://localhost:5000")
 
-  # 2. Start Frontend if not already running on port 5173
-  if not is_port_open(5173):
-    print("\n[INFO] Starting Frontend App on port 5173...")
-    frontend_proc = subprocess.Popen(
-        ["npm", "run", "dev:frontend"],
-        cwd=ROOT_DIR,
-        shell=True
-    )
-    if not wait_for_port(5173, 25):
-      print("  [WARN] Frontend port 5173 took longer to open, continuing...")
-    else:
-      print("  [OK] Frontend App is ready on http://localhost:5173")
+  # 2. Start Frontend on port 5173
+  print("[INFO] Starting ProjectManager Frontend App on port 5173...")
+  frontend_proc = subprocess.Popen(
+      ["npm", "run", "dev:frontend"],
+      cwd=ROOT_DIR,
+      shell=True
+  )
+  if not wait_for_port(5173, 25):
+    print("  [WARN] Frontend port 5173 took longer to open, continuing...")
   else:
-    print("\n[INFO] Frontend App is already running.")
+    print("  [OK] ProjectManager Frontend is ready on http://localhost:5173")
 
   time.sleep(3)
 
@@ -74,7 +88,7 @@ def main():
   test_file = os.path.join(os.path.dirname(__file__), "test_project_manager_flow.py")
   result = subprocess.run([sys.executable, test_file], cwd=ROOT_DIR)
 
-  # 4. Clean up spawned processes if needed
+  # 4. Clean up spawned processes
   if backend_proc:
     try:
       subprocess.run(f"taskkill /F /T /PID {backend_proc.pid}", shell=True, capture_output=True)
@@ -86,6 +100,8 @@ def main():
       subprocess.run(f"taskkill /F /T /PID {frontend_proc.pid}", shell=True, capture_output=True)
     except Exception:
       pass
+
+  kill_processes_on_ports([5000, 5173])
 
   print("\n" + "=" * 65)
   print(f"[FINISHED] Selenium Test Suite Exit Code: {result.returncode}")
