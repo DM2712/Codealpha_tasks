@@ -114,12 +114,12 @@ export const AuthWall = ({ children }) => {
           )}
 
           {/* Quick Demo Access Button for evaluation and test runners */}
-          <button
+          {/* <button
             onClick={() => signIn('alex.morgan@example.com', 'Alex Morgan')}
             className="w-full py-3 px-4 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 font-extrabold text-xs rounded-xl border border-indigo-200 active:scale-98 transition-all flex items-center justify-center gap-2 shadow-sm"
           >
             <UserCheck className="w-4 h-4 text-primary" /> Enter Store (Demo Shopper)
-          </button>
+          </button> */}
         </div>
 
         {/* Footer info & Admin Secret Link */}
@@ -127,12 +127,12 @@ export const AuthWall = ({ children }) => {
           <span className="flex items-center gap-1">
             <Lock className="w-3 h-3 text-emerald-600" /> 256-bit Encrypted
           </span>
-          <Link
+          {/* <Link
             to="/admin"
             className="text-secondary/70 hover:text-primary font-semibold transition-colors"
           >
             Staff Portal
-          </Link>
+          </Link> */}
         </div>
       </div>
     </div>
