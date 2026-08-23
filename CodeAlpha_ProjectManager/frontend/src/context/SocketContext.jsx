@@ -19,7 +19,7 @@ export const SocketProvider = ({ children }) => {
       return;
     }
 
-    const socketUrl = rawUrl || 'http://localhost:5000';
+    const socketUrl = rawUrl || 'http://localhost:5050';
 
     try {
       const newSocket = io(socketUrl, {

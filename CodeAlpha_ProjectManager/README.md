@@ -130,9 +130,9 @@ Ensure `.env` files are created in `backend/` and `frontend/`.
 
 **Backend (`backend/.env`):**
 ```env
-PORT=5000
+PORT=5050
 NODE_ENV=development
-CLIENT_URL=http://localhost:5173
+CLIENT_URL=http://localhost:5175
 CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
 SUPABASE_URL=https://<your-project>.supabase.co
@@ -143,8 +143,8 @@ SUPABASE_SERVICE_ROLE_KEY=sb_publishable_...
 **Frontend (`frontend/.env`):**
 ```env
 VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
-VITE_API_BASE_URL=http://localhost:5000/api
-VITE_SOCKET_URL=http://localhost:5000
+VITE_API_BASE_URL=http://localhost:5050/api
+VITE_SOCKET_URL=http://localhost:5050
 ```
 
 ### 4. Run Development Servers
@@ -152,9 +152,9 @@ To run both backend and frontend concurrently:
 ```bash
 npm run dev
 ```
-- **Frontend App**: `http://localhost:5173`
-- **Backend API**: `http://localhost:5000`
-- **API Health**: `http://localhost:5000/api/health`
+- **Frontend App**: `http://localhost:5175`
+- **Backend API**: `http://localhost:5050`
+- **API Health**: `http://localhost:5050/api/health`
 
 ---
 

@@ -47,42 +47,42 @@ def main():
   print("=" * 65)
 
   # Kill any old background servers to ensure clean test environment
-  print("\n[INFO] Ensuring clean ports for ProjectManager...")
-  kill_processes_on_ports([5000, 5173])
+  print("\n[INFO] Ensuring clean ports for ProjectManager (5050, 5175)...")
+  kill_processes_on_ports([5050, 5175])
   time.sleep(2)
 
   backend_proc = None
   frontend_proc = None
 
-  # 1. Start Backend on port 5000
-  print("[INFO] Starting ProjectManager Backend Server on port 5000...")
+  # 1. Start Backend on port 5050
+  print("[INFO] Starting ProjectManager Backend Server on port 5050...")
   backend_proc = subprocess.Popen(
       ["npm", "start", "--prefix", "backend"],
       cwd=ROOT_DIR,
       shell=True
   )
-  if not wait_for_port(5000, 25):
-    print("  [WARN] Backend port 5000 took longer to open, continuing...")
+  if not wait_for_port(5050, 25):
+    print("  [WARN] Backend port 5050 took longer to open, continuing...")
   else:
-    print("  [OK] ProjectManager Backend is ready on http://localhost:5000")
+    print("  [OK] ProjectManager Backend is ready on http://localhost:5050")
 
-  # 2. Start Frontend on port 5173
-  print("[INFO] Starting ProjectManager Frontend App on port 5173...")
+  # 2. Start Frontend on port 5175
+  print("[INFO] Starting ProjectManager Frontend App on port 5175...")
   frontend_proc = subprocess.Popen(
       ["npm", "run", "dev:frontend"],
       cwd=ROOT_DIR,
       shell=True
   )
-  if not wait_for_port(5173, 25):
-    print("  [WARN] Frontend port 5173 took longer to open, continuing...")
+  if not wait_for_port(5175, 25):
+    print("  [WARN] Frontend port 5175 took longer to open, continuing...")
   else:
-    print("  [OK] ProjectManager Frontend is ready on http://localhost:5173")
+    print("  [OK] ProjectManager Frontend is ready on http://localhost:5175")
 
   time.sleep(3)
 
   # 3. Execute Selenium Test Suite
   print("\n" + "=" * 65)
-  print("[RUN] Running Selenium Test Cases...")
+  print("[RUN] Running Selenium Test Cases on http://localhost:5175...")
   print("=" * 65 + "\n")
 
   test_file = os.path.join(os.path.dirname(__file__), "test_project_manager_flow.py")
@@ -101,7 +101,7 @@ def main():
     except Exception:
       pass
 
-  kill_processes_on_ports([5000, 5173])
+  kill_processes_on_ports([5050, 5175])
 
   print("\n" + "=" * 65)
   print(f"[FINISHED] Selenium Test Suite Exit Code: {result.returncode}")

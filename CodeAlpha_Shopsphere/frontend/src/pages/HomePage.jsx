@@ -67,7 +67,7 @@ export const HomePage = () => {
 
         <div className="relative z-10 max-w-2xl p-6 sm:p-12 text-white space-y-5">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary-container/80 backdrop-blur-md text-on-primary text-xs font-extrabold uppercase tracking-widest">
-            <Sparkles className="w-3.5 h-3.5" /> Next-Gen Collection 2026
+            <Sparkles className="w-3.5 h-3.5" /> Next-Gen Collection 
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight text-white drop-shadow-md">
@@ -85,12 +85,12 @@ export const HomePage = () => {
             >
               Shop Collection <ArrowRight className="w-4 h-4" />
             </Link>
-            <Link
+            {/* <Link
               to="/products?category=beauty"
               className="px-6 py-3.5 bg-white/20 hover:bg-white/30 backdrop-blur-md text-white font-bold text-sm rounded-2xl transition-all border border-white/30"
             >
               Explore Beauty
-            </Link>
+            </Link> */}
           </div>
         </div>
       </section>

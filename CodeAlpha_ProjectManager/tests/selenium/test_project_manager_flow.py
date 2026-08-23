@@ -13,7 +13,7 @@ if sys.platform == "win32":
   sys.stdout.reconfigure(encoding='utf-8')
   sys.stderr.reconfigure(encoding='utf-8')
 
-BASE_URL = "http://localhost:5173"
+BASE_URL = "http://localhost:5175"
 
 def get_driver():
   """Initialize Chrome or Edge WebDriver in headless mode."""
