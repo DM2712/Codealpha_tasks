@@ -198,21 +198,6 @@ export const AdminDashboardPage = () => {
               </div>
             </div>
 
-            {/* Quick Demo Helper Hint */}
-            {/* <div className="p-3 bg-surface-container-low rounded-xl border border-outline-variant/20 text-[11px] text-secondary flex items-center justify-between">
-              <span>Demo Passkey: <strong className="text-primary font-mono">admin123</strong></span>
-              <button
-                type="button"
-                onClick={() => {
-                  setUsername('admin');
-                  setPasskey('admin123');
-                }}
-                className="text-primary font-bold hover:underline"
-              >
-                Auto Fill
-              </button>
-            </div> */}
-
             <button
               type="submit"
               disabled={isVerifying}

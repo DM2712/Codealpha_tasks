@@ -1,67 +1,12 @@
 import { supabase, isSupabaseConfigured } from '../config/supabase.js';
 import crypto from 'crypto';
 
-// In-Memory fallback store for demo & zero-config testing
+// In-Memory fallback store for zero-config resilient storage
 const memoryStore = {
   users: new Map(),
   orders: new Map(),
   orderItems: new Map(),
 };
-
-// Seed sample orders for demo
-const seedDemoOrders = () => {
-  const demoOrderId = 'ord_demo_982341';
-  const demoClerkId = 'user_demo_codealpha';
-  
-  memoryStore.orders.set(demoOrderId, {
-    id: demoOrderId,
-    clerk_user_id: demoClerkId,
-    total_amount: 324.98,
-    subtotal: 299.99,
-    tax: 24.99,
-    shipping_fee: 0.00,
-    discount: 0.00,
-    status: 'delivered',
-    payment_method: 'credit_card',
-    shipping_details: {
-      fullName: 'Alex Morgan',
-      email: 'alex.morgan@example.com',
-      address: '742 Evergreen Terrace',
-      city: 'Springfield',
-      state: 'OR',
-      postalCode: '97477',
-      country: 'United States',
-      phone: '+1 (555) 019-2834'
-    },
-    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-    updated_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-  });
-
-  memoryStore.orderItems.set(demoOrderId, [
-    {
-      id: 'item_demo_1',
-      order_id: demoOrderId,
-      product_id: '1',
-      product_name: 'Essence Mascara Lash Princess',
-      price: 9.99,
-      quantity: 1,
-      image_url: 'https://cdn.dummyjson.com/products/images/beauty/Essence%20Mascara%20Lash%20Princess/1.png',
-      created_at: new Date().toISOString()
-    },
-    {
-      id: 'item_demo_2',
-      order_id: demoOrderId,
-      product_id: '2',
-      product_name: 'Eyeshadow Palette with Mirror',
-      price: 19.99,
-      quantity: 2,
-      image_url: 'https://cdn.dummyjson.com/products/images/beauty/Eyeshadow%20Palette%20with%20Mirror/1.png',
-      created_at: new Date().toISOString()
-    }
-  ]);
-};
-
-seedDemoOrders();
 
 export const storeService = {
   // ---------------------------------------------------------------------------
@@ -245,7 +190,7 @@ export const storeService = {
     // Memory store lookup
     const userOrders = [];
     for (const order of memoryStore.orders.values()) {
-      if (order.clerk_user_id === clerk_user_id || clerk_user_id === 'guest' || clerk_user_id === 'user_demo_codealpha') {
+      if (order.clerk_user_id === clerk_user_id || clerk_user_id === 'guest') {
         const items = memoryStore.orderItems.get(order.id) || [];
         userOrders.push({
           ...order,

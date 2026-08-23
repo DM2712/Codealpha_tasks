@@ -64,7 +64,7 @@ const PrivacyPolicyPage = () => {
           <p>We use cookies and similar tracking technologies solely to operate the platform:</p>
           <ul className="list-unstyled ps-3 mt-2">
             <li className="d-flex align-items-start gap-2 mb-2"><CheckCircle2 size={16} className="text-success mt-1 flex-shrink-0" /><span><strong>Session Cookies:</strong> Used by Clerk to maintain authenticated sessions across page refreshes.</span></li>
-            <li className="d-flex align-items-start gap-2 mb-2"><CheckCircle2 size={16} className="text-success mt-1 flex-shrink-0" /><span><strong>Preference Cookies:</strong> Persisting user UI preferences (e.g., theme, demo account selection).</span></li>
+            <li className="d-flex align-items-start gap-2 mb-2"><CheckCircle2 size={16} className="text-success mt-1 flex-shrink-0" /><span><strong>Preference Cookies:</strong> Persisting user UI preferences (e.g., collapsed sidebar, theme).</span></li>
           </ul>
           <p className="mt-2">We do not use advertising cookies, cross-site tracking scripts, or sell cookie-based behavioural data.</p>
         </div>

@@ -112,14 +112,6 @@ export const AuthWall = ({ children }) => {
               </button>
             </div>
           )}
-
-          {/* Quick Demo Access Button for evaluation and test runners */}
-          {/* <button
-            onClick={() => signIn('alex.morgan@example.com', 'Alex Morgan')}
-            className="w-full py-3 px-4 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 font-extrabold text-xs rounded-xl border border-indigo-200 active:scale-98 transition-all flex items-center justify-center gap-2 shadow-sm"
-          >
-            <UserCheck className="w-4 h-4 text-primary" /> Enter Store (Demo Shopper)
-          </button> */}
         </div>
 
         {/* Footer info & Admin Secret Link */}

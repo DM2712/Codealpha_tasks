@@ -1,30 +1,14 @@
 import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAppAuth, DEMO_ACCOUNTS } from '../context/AuthContext';
+import { Link, useLocation } from 'react-router-dom';
+import { useAppAuth } from '../context/AuthContext';
 import { UserButton } from '@clerk/clerk-react';
-import { Plus, User, LogIn, LogOut, Sparkles, LayoutDashboard, ChevronDown } from 'lucide-react';
+import { Plus, User, LogIn, LayoutDashboard } from 'lucide-react';
 
 const Navbar = ({ onOpenCreateProject }) => {
-  const { isSignedIn, isDemo, userName, userEmail, userAvatar, signOut, signInDemo } = useAppAuth();
+  const { isSignedIn, userName, userEmail } = useAppAuth();
   const location = useLocation();
-  const navigate = useNavigate();
 
   const isDashboard = location.pathname.startsWith('/dashboard');
-
-  const getInitials = (name) => {
-    if (!name) return 'U';
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .substring(0, 2)
-      .toUpperCase();
-  };
-
-  const handleSelectDemo = (account) => {
-    signInDemo(account);
-    navigate('/dashboard');
-  };
 
   return (
     <header className="header-saas">
@@ -83,25 +67,7 @@ const Navbar = ({ onOpenCreateProject }) => {
 
               {/* User Identity Chip */}
               <div className="user-identity-chip">
-                {!isDemo ? (
-                  <UserButton afterSignOutUrl="/" />
-                ) : (
-                  userAvatar ? (
-                    <img
-                      src={userAvatar}
-                      alt={userName}
-                      className="user-avatar-sm"
-                      style={{ width: '28px', height: '28px' }}
-                    />
-                  ) : (
-                    <div
-                      className="user-avatar-initials"
-                      style={{ width: '28px', height: '28px', fontSize: '0.75rem' }}
-                    >
-                      {getInitials(userName)}
-                    </div>
-                  )
-                )}
+                <UserButton afterSignOutUrl="/" />
 
                 <div className="d-none d-lg-block text-start lh-1 pe-1">
                   <div className="fw-bold text-dark text-truncate" style={{ maxWidth: '120px', fontSize: '0.8rem' }}>
@@ -111,54 +77,10 @@ const Navbar = ({ onOpenCreateProject }) => {
                     {userEmail}
                   </div>
                 </div>
-
-                {/* Demo Sign Out Button */}
-                {isDemo && (
-                  <button
-                    className="btn btn-link text-danger p-0 ms-1 border-0"
-                    title="Sign Out"
-                    onClick={signOut}
-                  >
-                    <LogOut size={14} />
-                  </button>
-                )}
               </div>
             </>
           ) : (
             <div className="d-flex align-items-center gap-2">
-              {/* Quick Demo Switcher */}
-              <div className="dropdown">
-                <button
-                  className="btn-saas-secondary dropdown-toggle"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                  style={{ fontSize: '0.82rem', padding: '0.4rem 0.75rem' }}
-                >
-                  <Sparkles size={14} className="text-warning" />
-                  <span className="d-none d-sm-inline">Quick Demo</span>
-                </button>
-                <ul className="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 p-2 mt-2" style={{ minWidth: '240px' }}>
-                  <li className="dropdown-header small text-uppercase fw-bold text-muted px-2 pb-1">
-                    Select Test Persona
-                  </li>
-                  {DEMO_ACCOUNTS.map((acc) => (
-                    <li key={acc.id}>
-                      <button
-                        className="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center gap-2"
-                        onClick={() => handleSelectDemo(acc)}
-                      >
-                        <img src={acc.avatarUrl} alt={acc.name} className="user-avatar-sm" style={{ width: '24px', height: '24px' }} />
-                        <div className="lh-1">
-                          <div className="fw-semibold small">{acc.name}</div>
-                          <small className="text-muted" style={{ fontSize: '0.7rem' }}>{acc.role}</small>
-                        </div>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
               <Link
                 to="/sign-in"
                 className="btn-saas-secondary"

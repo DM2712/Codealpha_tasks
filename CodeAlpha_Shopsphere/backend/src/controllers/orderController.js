@@ -60,7 +60,7 @@ export const orderController = {
   // GET /api/orders/my-orders
   async getMyOrders(req, res) {
     try {
-      const clerk_user_id = req.auth?.userId || req.query.clerk_user_id || 'user_demo_codealpha';
+      const clerk_user_id = req.auth?.userId || req.query.clerk_user_id || 'guest';
       const orders = await storeService.getOrdersByUser(clerk_user_id);
 
       return res.status(200).json({

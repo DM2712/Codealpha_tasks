@@ -25,6 +25,29 @@ const CLERK_PUBLISHABLE_KEY =
   import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ||
   'pk_test_cmVndWxhci1jYXRmaXNoLTcyMDAuY2xlcmsuYWNjb3VudHMuZGV2JA';
 
+const clerkLocalization = {
+  signIn: {
+    start: {
+      title: 'Sign in to ProjectManager',
+      subtitle: 'Welcome back! Please sign in to continue',
+    },
+  },
+  signUp: {
+    start: {
+      title: 'Create your ProjectManager account',
+      subtitle: 'Welcome! Please fill in the details to get started',
+    },
+  },
+};
+
+const clerkAppearance = {
+  variables: {
+    colorPrimary: '#2563eb',
+    fontFamily: 'Inter, system-ui, sans-serif',
+    borderRadius: '0.625rem',
+  },
+};
+
 function AppContent() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -96,6 +119,8 @@ export default function App() {
     <ClerkProvider
       publishableKey={CLERK_PUBLISHABLE_KEY}
       navigate={(to) => navigate(to)}
+      localization={clerkLocalization}
+      appearance={clerkAppearance}
     >
       <AuthProvider>
         <SocketProvider>

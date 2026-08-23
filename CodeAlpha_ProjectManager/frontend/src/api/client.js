@@ -40,9 +40,6 @@ api.interceptors.request.use(
         if (userInfo.email) config.headers['x-user-email'] = userInfo.email;
         if (userInfo.name) config.headers['x-user-name'] = userInfo.name;
         if (userInfo.avatarUrl) config.headers['x-user-avatar'] = userInfo.avatarUrl;
-        if (userInfo.isDemo) {
-          config.headers['x-demo-user-id'] = userInfo.userId;
-        }
       }
     }
 

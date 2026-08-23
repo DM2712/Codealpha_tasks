@@ -4,7 +4,6 @@ import os
 import unittest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -64,27 +63,18 @@ class ProjectManagerFlowTest(unittest.TestCase):
     print("=" * 65)
     cls.driver = get_driver()
     cls.wait = WebDriverWait(cls.driver, 15)
+    try:
+      cls.driver.get(BASE_URL)
+      time.sleep(1)
+      cls.driver.execute_script("localStorage.setItem('e2e_authenticated', 'true');")
+    except Exception:
+      pass
 
   @classmethod
   def tearDownClass(cls):
     if cls.driver:
       cls.driver.quit()
       print("\n[CLEANUP] Selenium WebDriver session closed.")
-
-  def ensure_authenticated(self):
-    """Helper to ensure user is logged in via demo account."""
-    try:
-      current_url = self.driver.current_url
-      if "/dashboard" not in current_url and "/projects" not in current_url:
-        self.driver.get(f"{BASE_URL}/sign-in")
-        time.sleep(1.5)
-        demo_btn = self.wait.until(
-            EC.presence_of_element_located((By.XPATH, "//button[@id='demo-user-0' or contains(@data-testid, 'demo-account')]"))
-        )
-        self.driver.execute_script("arguments[0].click();", demo_btn)
-        time.sleep(2)
-    except Exception:
-      pass
 
   def test_01_landing_page_and_navigation(self):
     """Test 1: Verify Landing Page, branding, and navigation"""
@@ -97,43 +87,30 @@ class ProjectManagerFlowTest(unittest.TestCase):
     )
     print(f"  [PASS] Landing page headline verified: \"{headline.text[:45]}...\"")
 
-    # Check for Get Started or Sign In link
+    # Check for Get Started and Sign In links
     sign_in_link = self.driver.find_elements(By.XPATH, "//a[contains(., 'Sign In') or contains(., 'Get Started')]")
     self.assertGreater(len(sign_in_link), 0, "Sign In / Get Started button should exist")
     print("  [PASS] Navigation and CTA links verified")
 
-  def test_02_sign_in_demo_account(self):
-    """Test 2: Verify Sign In page and instant Demo login"""
-    print("\n[Test 2] Verifying Sign In & Demo Authentication...")
+  def test_02_sign_in_page_rendering(self):
+    """Test 2: Verify Sign In page and authentic Clerk authentication layout"""
+    print("\n[Test 2] Verifying Sign In Page Rendering...")
     self.driver.get(f"{BASE_URL}/sign-in")
 
-    # Check for Quick Demo Access card
-    demo_header = self.wait.until(
-        EC.presence_of_element_located((By.XPATH, "//*[contains(., 'Quick Demo Access')]"))
+    # Verify heading
+    heading = self.wait.until(
+        EC.presence_of_element_located((By.XPATH, "//h2[contains(., 'Sign In')]"))
     )
-    self.assertTrue(demo_header.is_displayed())
-    print("  [PASS] Quick Demo Access card verified on Sign In page")
-
-    # Click on Alex Thompson demo account via ID
-    alex_btn = self.wait.until(
-        EC.presence_of_element_located((By.XPATH, "//button[@id='demo-user-0' or contains(., 'Alex Thompson')]"))
-    )
-    self.driver.execute_script("arguments[0].click();", alex_btn)
-    time.sleep(2.5)
-
-    # Verify redirected to Dashboard
-    self.wait.until(EC.url_contains("/dashboard"))
-    body_text = self.driver.find_element(By.TAG_NAME, "body").text
-    self.assertIn("Alex Thompson", body_text)
-    print("  [PASS] Successfully signed in as Alex Thompson and navigated to /dashboard")
+    self.assertTrue(heading.is_displayed())
+    print("  [PASS] Sign In page and authentication container rendered cleanly")
 
   def test_03_dashboard_kpis_and_projects(self):
     """Test 3: Verify Dashboard statistics and active projects list"""
     print("\n[Test 3] Verifying Dashboard KPIs & Projects...")
-    self.ensure_authenticated()
     self.driver.get(f"{BASE_URL}/dashboard")
+    time.sleep(2)
 
-    # Check for KPI cards (Active Projects, Tasks, etc.)
+    # Check for KPI summary cards
     kpi_cards = self.wait.until(
         EC.presence_of_all_elements_located((By.XPATH, "//*[contains(@class, 'pm-card-static')]"))
     )
@@ -150,7 +127,6 @@ class ProjectManagerFlowTest(unittest.TestCase):
   def test_04_create_new_project_modal(self):
     """Test 4: Verify Project Creation Modal and submission"""
     print("\n[Test 4] Verifying Project Creation Flow...")
-    self.ensure_authenticated()
     self.driver.get(f"{BASE_URL}/dashboard")
     time.sleep(1.5)
 
@@ -166,7 +142,7 @@ class ProjectManagerFlowTest(unittest.TestCase):
         EC.presence_of_element_located((By.ID, "new-project-name-input"))
     )
     name_input.clear()
-    name_input.send_keys("Selenium E2E Sprint Board")
+    name_input.send_keys("Agile Sprint Board 2026")
 
     # Submit form
     submit_btn = self.wait.until(
@@ -174,12 +150,11 @@ class ProjectManagerFlowTest(unittest.TestCase):
     )
     self.driver.execute_script("arguments[0].click();", submit_btn)
     time.sleep(3)
-    print("  [PASS] Created project 'Selenium E2E Sprint Board' successfully")
+    print("  [PASS] Created project 'Agile Sprint Board 2026' successfully")
 
   def test_05_kanban_board_and_action_bar_alignment(self):
     """Test 5: Verify Project Board Kanban view and aligned action bar"""
     print("\n[Test 5] Verifying Kanban Board & Action Bar Alignment...")
-    self.ensure_authenticated()
     self.driver.get(f"{BASE_URL}/dashboard")
     time.sleep(2.5)
 
@@ -223,7 +198,7 @@ class ProjectManagerFlowTest(unittest.TestCase):
         EC.presence_of_element_located((By.ID, "task-title-input"))
     )
     title_input.clear()
-    title_input.send_keys("Automated Test Task 001")
+    title_input.send_keys("Implement PostgreSQL Indexes")
 
     # Click Save Task
     save_btn = self.wait.until(
@@ -231,7 +206,7 @@ class ProjectManagerFlowTest(unittest.TestCase):
     )
     self.driver.execute_script("arguments[0].click();", save_btn)
     time.sleep(2.5)
-    print("  [PASS] 'Automated Test Task 001' submitted and added to Kanban board")
+    print("  [PASS] 'Implement PostgreSQL Indexes' submitted and added to Kanban board")
 
   def test_07_member_management_modal(self):
     """Test 7: Verify Team Member Management modal via member chip"""

@@ -11,40 +11,14 @@ const requireAuth = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
 
-    // 1. Check for Demo / Mock / Test headers
-    const mockUserId = req.headers['x-mock-user-id'] || req.headers['x-demo-user-id'];
-    if (mockUserId || process.env.NODE_ENV === 'test') {
-      const effectiveId = mockUserId || 'user_demo_owner_1';
-      const effectiveEmail = req.headers['x-mock-user-email'] || req.headers['x-demo-user-email'] || 'alex.thompson@projectmanager.io';
-      const effectiveName = req.headers['x-mock-user-name'] || req.headers['x-demo-user-name'] || 'Alex Thompson';
-      const effectiveAvatar = req.headers['x-demo-user-avatar'] || '';
-
+    // 1. In automated unit test mode, allow test user context
+    if (process.env.NODE_ENV === 'test') {
       req.user = {
-        userId: effectiveId,
-        email: effectiveEmail,
-        name: effectiveName,
-        avatarUrl: effectiveAvatar,
+        userId: 'user_test_clerk_id',
+        email: 'test.user@projectmanager.io',
+        name: 'Test Engineer',
+        avatarUrl: '',
       };
-
-      // Ensure user profile exists in Supabase
-      if (!syncedUserCache.has(effectiveId)) {
-        try {
-          await supabase.from('user_profiles').upsert(
-            {
-              clerk_user_id: effectiveId,
-              name: effectiveName,
-              email: effectiveEmail,
-              avatar_url: effectiveAvatar,
-              updated_at: new Date().toISOString(),
-            },
-            { onConflict: 'clerk_user_id' }
-          );
-          syncedUserCache.add(effectiveId);
-        } catch (dbErr) {
-          console.warn('[AuthMiddleware] Demo user sync warning:', dbErr.message);
-        }
-      }
-
       return next();
     }
 
@@ -62,38 +36,6 @@ const requireAuth = async (req, res, next) => {
         success: false,
         message: 'Invalid session token. Please sign in again.',
       });
-    }
-
-    // Check if token is a demo token (e.g. "demo_token_user_demo_owner_1")
-    if (token.startsWith('demo_token_')) {
-      const demoId = token.replace('demo_token_', '');
-      const demoEmail = req.headers['x-user-email'] || 'demo.user@projectmanager.io';
-      const demoName = req.headers['x-user-name'] || 'Demo User';
-      const demoAvatar = req.headers['x-user-avatar'] || '';
-
-      req.user = {
-        userId: demoId,
-        email: demoEmail,
-        name: demoName,
-        avatarUrl: demoAvatar,
-      };
-
-      try {
-        await supabase.from('user_profiles').upsert(
-          {
-            clerk_user_id: demoId,
-            name: demoName,
-            email: demoEmail,
-            avatar_url: demoAvatar,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: 'clerk_user_id' }
-        );
-      } catch (err) {
-        // Continue
-      }
-
-      return next();
     }
 
     // 3. Verify standard Clerk JWT

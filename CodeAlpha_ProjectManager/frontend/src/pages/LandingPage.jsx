@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAppAuth, DEMO_ACCOUNTS } from '../context/AuthContext';
+import { useAppAuth } from '../context/AuthContext';
 import {
   Kanban,
   CheckCircle2,
@@ -24,15 +24,10 @@ import {
 } from 'lucide-react';
 
 const LandingPage = () => {
-  const { isSignedIn, signInDemo } = useAppAuth();
+  const { isSignedIn } = useAppAuth();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('board');
-
-  const handleQuickDemo = (account) => {
-    signInDemo(account);
-    navigate('/dashboard');
-  };
 
   return (
     <div className="bg-white overflow-hidden">
@@ -73,14 +68,13 @@ const LandingPage = () => {
                   <span>Start Free Trial</span>
                   <ArrowRight size={18} />
                 </Link>
-                <button
-                  onClick={() => handleQuickDemo(DEMO_ACCOUNTS[0])}
+                <Link
+                  to="/sign-in"
                   className="btn btn-outline-secondary btn-lg px-4 py-2.5 d-inline-flex align-items-center gap-2 bg-white"
                   style={{ borderRadius: '8px', fontWeight: '600' }}
                 >
-                  <Sparkles size={18} className="text-primary" />
-                  <span>Explore Live Demo</span>
-                </button>
+                  <span>Sign In</span>
+                </Link>
               </>
             )}
           </div>
@@ -100,7 +94,7 @@ const LandingPage = () => {
                 </span>
               </div>
               <div className="badge bg-white text-secondary border font-mono small">
-                LIVE DEMO PREVIEW
+                WORKSPACE PREVIEW
               </div>
             </div>
 

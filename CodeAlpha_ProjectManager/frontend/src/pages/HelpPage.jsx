@@ -49,8 +49,8 @@ const HelpPage = () => {
     },
     {
       category: 'getting-started',
-      question: 'How does the Quick Demo Login work?',
-      answer: 'The Quick Demo feature on the Sign In page lets you instantly log in as one of our three pre-configured team personas (Alex Thompson, Sarah Connor, or David Kim) without needing to register or create a password. Data created during demo sessions is fully persisted to our Supabase PostgreSQL database.',
+      question: 'How do I authenticate and log in?',
+      answer: 'ProjectManager uses Clerk authentication for enterprise-grade security. You can sign in using your email address, password, or OAuth single sign-on (SSO). All your user profile data and workspaces are safely isolated and encrypted with Supabase PostgreSQL.',
     },
     {
       category: 'getting-started',

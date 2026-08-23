@@ -1,10 +1,10 @@
 import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useAppAuth } from '../../context/AuthContext';
 import { ShieldAlert, LogIn } from 'lucide-react';
 
 export const ProtectedRoute = ({ children }) => {
-  const { isSignedIn, isLoaded, openSignIn, signIn, isClerkMode } = useAppAuth();
+  const { isSignedIn, isLoaded, openSignIn } = useAppAuth();
   const location = useLocation();
 
   if (!isLoaded) {
@@ -26,21 +26,12 @@ export const ProtectedRoute = ({ children }) => {
           Please sign in with your account to access your shopping cart checkout and personalized order history.
         </p>
 
-        {isClerkMode ? (
-          <button
-            onClick={() => openSignIn()}
-            className="w-full py-3 px-6 bg-primary-container text-on-primary font-semibold rounded-xl hover:bg-primary transition-all shadow-md flex items-center justify-center gap-2"
-          >
-            <LogIn className="w-5 h-5" /> Sign In with Clerk
-          </button>
-        ) : (
-          <button
-            onClick={() => signIn()}
-            className="w-full py-3 px-6 bg-primary-container text-on-primary font-semibold rounded-xl hover:bg-primary transition-all shadow-md flex items-center justify-center gap-2"
-          >
-            <LogIn className="w-5 h-5" /> Quick Sign In (Demo Mode)
-          </button>
-        )}
+        <button
+          onClick={() => openSignIn()}
+          className="w-full py-3 px-6 bg-primary-container text-on-primary font-semibold rounded-xl hover:bg-primary transition-all shadow-md flex items-center justify-center gap-2"
+        >
+          <LogIn className="w-5 h-5" /> Sign In
+        </button>
       </div>
     );
   }

@@ -231,12 +231,12 @@ const ReturnPolicyPage = () => {
               <div id="section-5" className="pm-card p-4 bg-white">
                 <div className="d-flex align-items-center gap-2 mb-3">
                   <div className="p-2 rounded-2 bg-secondary-subtle text-secondary"><Shield size={20} /></div>
-                  <h5 className="fw-bold text-dark mb-0" style={{ fontFamily: 'var(--font-display)' }}>5. Free Tier & Demo Accounts</h5>
+                  <h5 className="fw-bold text-dark mb-0" style={{ fontFamily: 'var(--font-display)' }}>5. Free Community Tier</h5>
                 </div>
                 <p className="text-secondary lh-lg">
-                  ProjectManager offers a fully featured <strong className="text-dark">free tier</strong> and instant <strong className="text-dark">demo accounts</strong> with no payment required.
-                  Since no financial transaction is involved, refund requests do not apply to free or demo usage.
-                  If you wish to discontinue free usage, simply delete your account from your Profile settings — no action needed.
+                  ProjectManager offers a fully featured <strong className="text-dark">free community tier</strong> with no payment required.
+                  Since no financial transaction is involved, refund requests do not apply to free tier usage.
+                  If you wish to discontinue usage, simply sign out or close your account from your Profile settings — no action needed.
                 </p>
               </div>
 

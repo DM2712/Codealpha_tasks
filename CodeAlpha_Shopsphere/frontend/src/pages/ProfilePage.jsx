@@ -61,17 +61,13 @@ export const ProfilePage = () => {
             </div>
 
             <div className="pt-2 sm:pt-0">
-              {isClerkMode ? (
+              {isClerkMode && (
                 <button
                   onClick={() => openUserProfile()}
                   className="px-4 py-2 bg-primary-container text-on-primary text-xs font-bold rounded-xl hover:bg-primary transition-all flex items-center gap-1.5 shadow-sm mx-auto sm:mx-0"
                 >
-                  <Shield className="w-3.5 h-3.5" /> Manage Clerk Account
+                  <Shield className="w-3.5 h-3.5" /> Manage Account
                 </button>
-              ) : (
-                <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-100 text-emerald-800 text-[11px] font-bold rounded-full">
-                  <Sparkles className="w-3 h-3" /> Demo Mode Active
-                </span>
               )}
             </div>
           </div>
