@@ -72,14 +72,14 @@ const DashboardPage = ({ isCreateModalOpen, setIsCreateModalOpen }) => {
   const totalInProgressTasks = projects.reduce((acc, p) => acc + (p.taskStats?.inProgress || 0), 0);
 
   return (
-    <div className="container-fluid px-3 px-md-5 py-4 max-w-[1440px]">
+    <div className="container-fluid px-3 px-md-5 py-4 max-w-[1440px] pb-5">
       {/* Header Section from Stitch Design */}
       <header className="mb-4 pb-2 d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3">
         <div>
-          <h2 className="fw-bold mb-1" style={{ fontFamily: 'var(--font-display)', color: 'var(--on-surface)' }}>
+          <h2 className="fw-bold mb-1" style={{ fontFamily: 'var(--font-display)', color: 'var(--on-surface)', fontSize: 'clamp(1.3rem, 3vw, 1.8rem)' }}>
             Good day, {userName} 👋
           </h2>
-          <p className="text-secondary mb-0" style={{ fontSize: '0.95rem' }}>
+          <p className="text-secondary mb-0" style={{ fontSize: '0.9rem' }}>
             Here's what's happening with your projects and tasks today.
           </p>
         </div>
@@ -108,55 +108,55 @@ const DashboardPage = ({ isCreateModalOpen, setIsCreateModalOpen }) => {
       </header>
 
       {/* Stats Grid (Stitch Dashboard KPI Cards) */}
-      <div className="row g-3 mb-4">
+      <div className="row g-2 g-sm-3 mb-4">
         {/* Stat 1 */}
-        <div className="col-sm-6 col-lg-3">
-          <div className="pm-card-static p-3 bg-white d-flex align-items-center gap-3">
-            <div className="p-2.5 rounded-3 bg-primary-subtle text-primary">
-              <FolderKanban size={22} />
+        <div className="col-6 col-lg-3">
+          <div className="pm-card-static p-2.5 p-sm-3 bg-white d-flex align-items-center gap-2.5 gap-sm-3 h-100">
+            <div className="p-2 p-sm-2.5 rounded-3 bg-primary-subtle text-primary shrink-0">
+              <FolderKanban size={20} />
             </div>
-            <div>
-              <div className="text-secondary small fw-medium">Active Projects</div>
-              <h4 className="fw-bold mb-0 font-mono text-dark">{totalProjects}</h4>
+            <div className="min-w-0">
+              <div className="text-secondary small fw-medium text-truncate" style={{ fontSize: '0.75rem' }}>Active Projects</div>
+              <h4 className="fw-bold mb-0 font-mono text-dark" style={{ fontSize: '1.25rem' }}>{totalProjects}</h4>
             </div>
           </div>
         </div>
 
         {/* Stat 2 */}
-        <div className="col-sm-6 col-lg-3">
-          <div className="pm-card-static p-3 bg-white d-flex align-items-center gap-3">
-            <div className="p-2.5 rounded-3 bg-warning-subtle text-warning-emphasis">
-              <Clock size={22} />
+        <div className="col-6 col-lg-3">
+          <div className="pm-card-static p-2.5 p-sm-3 bg-white d-flex align-items-center gap-2.5 gap-sm-3 h-100">
+            <div className="p-2 p-sm-2.5 rounded-3 bg-warning-subtle text-warning-emphasis shrink-0">
+              <Clock size={20} />
             </div>
-            <div>
-              <div className="text-secondary small fw-medium">In Progress Tasks</div>
-              <h4 className="fw-bold mb-0 font-mono text-dark">{totalInProgressTasks}</h4>
+            <div className="min-w-0">
+              <div className="text-secondary small fw-medium text-truncate" style={{ fontSize: '0.75rem' }}>In Progress</div>
+              <h4 className="fw-bold mb-0 font-mono text-dark" style={{ fontSize: '1.25rem' }}>{totalInProgressTasks}</h4>
             </div>
           </div>
         </div>
 
         {/* Stat 3 */}
-        <div className="col-sm-6 col-lg-3">
-          <div className="pm-card-static p-3 bg-white d-flex align-items-center gap-3">
-            <div className="p-2.5 rounded-3 bg-success-subtle text-success">
-              <CheckCircle2 size={22} />
+        <div className="col-6 col-lg-3">
+          <div className="pm-card-static p-2.5 p-sm-3 bg-white d-flex align-items-center gap-2.5 gap-sm-3 h-100">
+            <div className="p-2 p-sm-2.5 rounded-3 bg-success-subtle text-success shrink-0">
+              <CheckCircle2 size={20} />
             </div>
-            <div>
-              <div className="text-secondary small fw-medium">Completed Tasks</div>
-              <h4 className="fw-bold mb-0 font-mono text-dark">{totalDoneTasks}</h4>
+            <div className="min-w-0">
+              <div className="text-secondary small fw-medium text-truncate" style={{ fontSize: '0.75rem' }}>Completed</div>
+              <h4 className="fw-bold mb-0 font-mono text-dark" style={{ fontSize: '1.25rem' }}>{totalDoneTasks}</h4>
             </div>
           </div>
         </div>
 
         {/* Stat 4 */}
-        <div className="col-sm-6 col-lg-3">
-          <div className="pm-card-static p-3 bg-white d-flex align-items-center gap-3">
-            <div className="p-2.5 rounded-3 bg-info-subtle text-info-emphasis">
-              <Layers size={22} />
+        <div className="col-6 col-lg-3">
+          <div className="pm-card-static p-2.5 p-sm-3 bg-white d-flex align-items-center gap-2.5 gap-sm-3 h-100">
+            <div className="p-2 p-sm-2.5 rounded-3 bg-info-subtle text-info-emphasis shrink-0">
+              <Layers size={20} />
             </div>
-            <div>
-              <div className="text-secondary small fw-medium">Total Task Items</div>
-              <h4 className="fw-bold mb-0 font-mono text-dark">{totalTasks}</h4>
+            <div className="min-w-0">
+              <div className="text-secondary small fw-medium text-truncate" style={{ fontSize: '0.75rem' }}>Total Tasks</div>
+              <h4 className="fw-bold mb-0 font-mono text-dark" style={{ fontSize: '1.25rem' }}>{totalTasks}</h4>
             </div>
           </div>
         </div>
@@ -164,28 +164,28 @@ const DashboardPage = ({ isCreateModalOpen, setIsCreateModalOpen }) => {
 
       {/* Search and Filters Bar */}
       <div className="pm-card-static p-3 bg-white mb-4">
-        <div className="row g-3 align-items-center">
-          <div className="col-md-6 col-lg-7">
-            <div className="input-group">
+        <div className="row g-2 align-items-center">
+          <div className="col-12 col-md-6 col-lg-7">
+            <div className="input-group input-group-sm">
               <span className="input-group-text bg-transparent border-end-0 text-secondary">
-                <Search size={16} />
+                <Search size={15} />
               </span>
               <input
                 type="text"
                 className="form-control border-start-0"
-                placeholder="Search projects by title or description..."
+                placeholder="Search projects..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
           </div>
 
-          <div className="col-md-6 col-lg-5 d-flex gap-2 justify-content-md-end">
-            <div className="btn-group w-100 w-md-auto" role="group">
+          <div className="col-12 col-md-6 col-lg-5 d-flex gap-1 justify-content-md-end overflow-x-auto">
+            <div className="btn-group w-100" role="group">
               <button
                 type="button"
                 className={`btn btn-sm ${filterRole === 'all' ? 'btn-primary' : 'btn-outline-secondary'}`}
-                style={{ borderRadius: '8px 0 0 8px', fontSize: '0.82rem' }}
+                style={{ borderRadius: '8px 0 0 8px', fontSize: '0.78rem' }}
                 onClick={() => setFilterRole('all')}
               >
                 All ({projects.length})
@@ -193,18 +193,18 @@ const DashboardPage = ({ isCreateModalOpen, setIsCreateModalOpen }) => {
               <button
                 type="button"
                 className={`btn btn-sm ${filterRole === 'owned' ? 'btn-primary' : 'btn-outline-secondary'}`}
-                style={{ fontSize: '0.82rem' }}
+                style={{ fontSize: '0.78rem' }}
                 onClick={() => setFilterRole('owned')}
               >
-                Owned by Me
+                Owned
               </button>
               <button
                 type="button"
                 className={`btn btn-sm ${filterRole === 'member' ? 'btn-primary' : 'btn-outline-secondary'}`}
-                style={{ borderRadius: '0 8px 8px 0', fontSize: '0.82rem' }}
+                style={{ borderRadius: '0 8px 8px 0', fontSize: '0.78rem' }}
                 onClick={() => setFilterRole('member')}
               >
-                Shared with Me
+                Shared
               </button>
             </div>
           </div>
@@ -220,21 +220,32 @@ const DashboardPage = ({ isCreateModalOpen, setIsCreateModalOpen }) => {
           title={searchQuery ? 'No matching projects found' : 'No projects created yet'}
           description={
             searchQuery
-              ? 'Try adjusting your search terms or filters.'
-              : 'Create a new project workspace to start organizing boards, assigning tasks, and collaborating.'
+              ? `No projects matched "${searchQuery}". Try clearing search.`
+              : 'Create your first project board to start organizing agile sprints and collaborating.'
           }
-          actionText={!searchQuery ? 'Create New Project' : undefined}
+          actionLabel="Create Project"
           onAction={() => setIsCreateModalOpen(true)}
         />
       ) : (
-        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div className="row g-3 g-md-4">
           {filteredProjects.map((project) => (
-            <div className="col" key={project.id}>
+            <div key={project.id} className="col-12 col-md-6 col-lg-4">
               <ProjectCard project={project} onDelete={handleDeleteProject} />
             </div>
           ))}
         </div>
       )}
+
+      {/* Mobile Floating Action Button */}
+      <button
+        type="button"
+        className="mobile-fab-btn d-md-none"
+        onClick={() => setIsCreateModalOpen(true)}
+        title="Create New Project"
+        aria-label="Create New Project"
+      >
+        <Plus size={24} />
+      </button>
 
       {/* Create Project Modal */}
       <CreateProjectModal
@@ -242,7 +253,6 @@ const DashboardPage = ({ isCreateModalOpen, setIsCreateModalOpen }) => {
         onClose={() => setIsCreateModalOpen(false)}
         onProjectCreated={(newProj) => {
           setProjects((prev) => [newProj, ...prev]);
-          fetchProjects();
         }}
       />
     </div>

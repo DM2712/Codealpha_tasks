@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   getProject,
@@ -20,6 +20,7 @@ import {
   Search,
   Filter,
   Trash2,
+  Layers,
 } from 'lucide-react';
 
 const ProjectBoardPage = () => {
@@ -36,12 +37,15 @@ const ProjectBoardPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterPriority, setFilterPriority] = useState('all');
   const [filterAssignee, setFilterAssignee] = useState('all');
+  const [activeMobileColumn, setActiveMobileColumn] = useState('all');
 
   // Modal states
   const [selectedTask, setSelectedTask] = useState(null);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [taskModalInitialStatus, setTaskModalInitialStatus] = useState('todo');
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
+
+  const boardContainerRef = useRef(null);
 
   // Load project details and tasks
   const loadProjectData = useCallback(async () => {
@@ -115,10 +119,27 @@ const ProjectBoardPage = () => {
         socket.off('project:deleted', handleProjectDeleted);
       };
     }
-  }, [projectId, socket, joinProject, leaveProject, navigate]);
+  }, [socket, projectId, joinProject, leaveProject, navigate]);
 
-  // Handle task status update (from Drop or Quick Dropdown)
+  // Open modal to create a new task
+  const handleOpenCreateTask = (status = 'todo') => {
+    setSelectedTask(null);
+    setTaskModalInitialStatus(status);
+    setIsTaskModalOpen(true);
+  };
+
+  // Open modal to view/edit existing task
+  const handleTaskClick = (task) => {
+    setSelectedTask(task);
+    setIsTaskModalOpen(true);
+  };
+
+  // Handle task drag & drop status change or quick dropdown
   const handleStatusChange = async (taskId, newStatus) => {
+    const originalTask = tasks.find((t) => t.id === taskId);
+    if (!originalTask || originalTask.status === newStatus) return;
+
+    // Optimistic UI update
     setTasks((prev) =>
       prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t))
     );
@@ -126,24 +147,20 @@ const ProjectBoardPage = () => {
     try {
       await updateTask(taskId, { status: newStatus });
     } catch (err) {
-      toast.error('Failed to move task');
-      loadProjectData();
+      toast.error('Failed to update task status');
+      // Rollback
+      setTasks((prev) =>
+        prev.map((t) => (t.id === taskId ? originalTask : t))
+      );
     }
   };
 
-  const handleOpenCreateTask = (initialStatus = 'todo') => {
-    setSelectedTask(null);
-    setTaskModalInitialStatus(initialStatus);
-    setIsTaskModalOpen(true);
-  };
-
-  const handleTaskClick = (task) => {
-    setSelectedTask(task);
-    setIsTaskModalOpen(true);
-  };
-
   const handleDeleteProject = async () => {
-    if (!window.confirm(`Are you sure you want to delete this project? All tasks and comments will be permanently erased.`)) {
+    if (
+      !window.confirm(
+        `Are you sure you want to delete "${project.name}"? This cannot be undone.`
+      )
+    ) {
       return;
     }
 
@@ -200,8 +217,8 @@ const ProjectBoardPage = () => {
   };
 
   return (
-    <div className="container-fluid px-3 px-md-4 py-3">
-      {/* Board Header Section from Stitch Screen */}
+    <div className="container-fluid px-2 px-md-4 py-3 pb-5">
+      {/* Board Header Section */}
       <div className="px-3 py-3 border-bottom bg-white rounded-3 shadow-sm mb-3 d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3">
         <div>
           <div className="d-flex align-items-center gap-2 mb-1">
@@ -213,12 +230,12 @@ const ProjectBoardPage = () => {
             </span>
           </div>
 
-          <div className="d-flex align-items-center gap-2">
-            <h2 className="fw-bold text-dark mb-0" style={{ fontFamily: 'var(--font-display)' }}>
+          <div className="d-flex align-items-center gap-2 flex-wrap">
+            <h2 className="fw-bold text-dark mb-0" style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.2rem, 3vw, 1.6rem)' }}>
               {project.name}
             </h2>
             <span
-              className={`badge rounded-pill text-capitalize ms-1 ${
+              className={`badge rounded-pill text-capitalize ${
                 project.isOwner ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-light text-secondary border'
               }`}
               style={{ fontSize: '0.75rem' }}
@@ -235,7 +252,7 @@ const ProjectBoardPage = () => {
         </div>
 
         {/* Action buttons */}
-        <div className="d-flex align-items-center gap-2 flex-nowrap">
+        <div className="d-flex align-items-center gap-2 flex-wrap justify-content-between justify-content-md-end">
           {/* Member avatars chip */}
           <button
             type="button"
@@ -288,7 +305,7 @@ const ProjectBoardPage = () => {
       <div className="pm-card-static p-2.5 bg-white mb-3">
         <div className="row g-2 align-items-center">
           {/* Search Box */}
-          <div className="col-md-5 col-lg-4">
+          <div className="col-12 col-md-5 col-lg-4">
             <div className="input-group input-group-sm">
               <span className="input-group-text bg-transparent border-end-0 text-secondary">
                 <Search size={14} />
@@ -304,9 +321,9 @@ const ProjectBoardPage = () => {
           </div>
 
           {/* Priority Filter */}
-          <div className="col-sm-6 col-md-3 col-lg-3">
+          <div className="col-6 col-md-3 col-lg-3">
             <div className="d-flex align-items-center gap-1">
-              <span className="small text-secondary text-nowrap">Priority:</span>
+              <span className="small text-secondary text-nowrap d-none d-sm-inline">Priority:</span>
               <select
                 className="form-select form-select-sm"
                 value={filterPriority}
@@ -321,9 +338,9 @@ const ProjectBoardPage = () => {
           </div>
 
           {/* Assignee Filter */}
-          <div className="col-sm-6 col-md-4 col-lg-3">
+          <div className="col-6 col-md-4 col-lg-3">
             <div className="d-flex align-items-center gap-1">
-              <span className="small text-secondary text-nowrap">Assignee:</span>
+              <span className="small text-secondary text-nowrap d-none d-sm-inline">Assignee:</span>
               <select
                 className="form-select form-select-sm"
                 value={filterAssignee}
@@ -342,44 +359,112 @@ const ProjectBoardPage = () => {
           </div>
 
           {/* Task count */}
-          <div className="col-md-12 col-lg-2 text-lg-end text-secondary small font-mono">
+          <div className="col-12 col-lg-2 text-end text-secondary small font-mono d-none d-lg-block">
             <strong>{filteredTasks.length}</strong> / <strong>{tasks.length}</strong> tasks
           </div>
         </div>
       </div>
 
-      {/* Kanban Board Container */}
-      <div className="kanban-board-container">
-        <BoardColumn
-          status="todo"
-          title="To Do"
-          tasks={todoTasks}
-          onTaskClick={handleTaskClick}
-          onOpenCreateTask={handleOpenCreateTask}
-          onStatusChange={handleStatusChange}
-          onDropTask={handleStatusChange}
-        />
+      {/* Mobile Column Quick Switcher Tabs (Stitch Mobile Spec) */}
+      <div className="d-flex d-md-none bg-white p-1 rounded-3 border mb-3 shadow-sm gap-1 overflow-x-auto">
+        <button
+          className={`btn btn-sm flex-fill py-1.5 px-2 rounded-2 text-nowrap ${
+            activeMobileColumn === 'all'
+              ? 'bg-primary text-white fw-bold shadow-sm'
+              : 'text-secondary bg-transparent'
+          }`}
+          style={{ fontSize: '0.75rem' }}
+          onClick={() => setActiveMobileColumn('all')}
+        >
+          All ({filteredTasks.length})
+        </button>
 
-        <BoardColumn
-          status="in_progress"
-          title="In Progress"
-          tasks={inProgressTasks}
-          onTaskClick={handleTaskClick}
-          onOpenCreateTask={handleOpenCreateTask}
-          onStatusChange={handleStatusChange}
-          onDropTask={handleStatusChange}
-        />
+        <button
+          className={`btn btn-sm flex-fill py-1.5 px-2 rounded-2 text-nowrap ${
+            activeMobileColumn === 'todo'
+              ? 'bg-secondary text-white fw-bold shadow-sm'
+              : 'text-secondary bg-transparent'
+          }`}
+          style={{ fontSize: '0.75rem' }}
+          onClick={() => setActiveMobileColumn('todo')}
+        >
+          To Do ({todoTasks.length})
+        </button>
 
-        <BoardColumn
-          status="done"
-          title="Done"
-          tasks={doneTasks}
-          onTaskClick={handleTaskClick}
-          onOpenCreateTask={handleOpenCreateTask}
-          onStatusChange={handleStatusChange}
-          onDropTask={handleStatusChange}
-        />
+        <button
+          className={`btn btn-sm flex-fill py-1.5 px-2 rounded-2 text-nowrap ${
+            activeMobileColumn === 'in_progress'
+              ? 'bg-primary text-white fw-bold shadow-sm'
+              : 'text-secondary bg-transparent'
+          }`}
+          style={{ fontSize: '0.75rem' }}
+          onClick={() => setActiveMobileColumn('in_progress')}
+        >
+          In Progress ({inProgressTasks.length})
+        </button>
+
+        <button
+          className={`btn btn-sm flex-fill py-1.5 px-2 rounded-2 text-nowrap ${
+            activeMobileColumn === 'done'
+              ? 'bg-success text-white fw-bold shadow-sm'
+              : 'text-secondary bg-transparent'
+          }`}
+          style={{ fontSize: '0.75rem' }}
+          onClick={() => setActiveMobileColumn('done')}
+        >
+          Done ({doneTasks.length})
+        </button>
       </div>
+
+      {/* Kanban Board Container */}
+      <div className="kanban-board-container" ref={boardContainerRef}>
+        {(activeMobileColumn === 'all' || activeMobileColumn === 'todo') && (
+          <BoardColumn
+            status="todo"
+            title="To Do"
+            tasks={todoTasks}
+            onTaskClick={handleTaskClick}
+            onOpenCreateTask={handleOpenCreateTask}
+            onStatusChange={handleStatusChange}
+            onDropTask={handleStatusChange}
+          />
+        )}
+
+        {(activeMobileColumn === 'all' || activeMobileColumn === 'in_progress') && (
+          <BoardColumn
+            status="in_progress"
+            title="In Progress"
+            tasks={inProgressTasks}
+            onTaskClick={handleTaskClick}
+            onOpenCreateTask={handleOpenCreateTask}
+            onStatusChange={handleStatusChange}
+            onDropTask={handleStatusChange}
+          />
+        )}
+
+        {(activeMobileColumn === 'all' || activeMobileColumn === 'done') && (
+          <BoardColumn
+            status="done"
+            title="Done"
+            tasks={doneTasks}
+            onTaskClick={handleTaskClick}
+            onOpenCreateTask={handleOpenCreateTask}
+            onStatusChange={handleStatusChange}
+            onDropTask={handleStatusChange}
+          />
+        )}
+      </div>
+
+      {/* Mobile Floating Action Button (FAB) */}
+      <button
+        type="button"
+        className="mobile-fab-btn d-md-none"
+        onClick={() => handleOpenCreateTask(activeMobileColumn === 'all' ? 'todo' : activeMobileColumn)}
+        title="Add Task"
+        aria-label="Add Task"
+      >
+        <Plus size={24} />
+      </button>
 
       {/* Task Modal */}
       <TaskModal

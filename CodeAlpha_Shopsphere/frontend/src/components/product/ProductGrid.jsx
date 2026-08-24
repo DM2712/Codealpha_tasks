@@ -6,7 +6,7 @@ import { ShoppingBag, RefreshCw } from 'lucide-react';
 export const ProductGrid = ({ products = [], isLoading = false, error = null, onRetry, skeletonCount = 8 }) => {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-6">
         {Array.from({ length: skeletonCount }).map((_, index) => (
           <ProductCardSkeleton key={index} />
         ))}
@@ -21,7 +21,7 @@ export const ProductGrid = ({ products = [], isLoading = false, error = null, on
         {onRetry && (
           <button
             onClick={onRetry}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-primary-container text-on-primary rounded-xl text-sm font-bold hover:bg-primary transition-all"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary-container text-on-primary rounded-xl text-sm font-bold hover:bg-primary transition-all active:scale-95"
           >
             <RefreshCw className="w-4 h-4" /> Try Again
           </button>
@@ -32,11 +32,11 @@ export const ProductGrid = ({ products = [], isLoading = false, error = null, on
 
   if (!products || products.length === 0) {
     return (
-      <div className="py-20 text-center max-w-md mx-auto p-8 bg-surface-container-lowest rounded-3xl border border-outline-variant/30 shadow-soft">
-        <div className="w-16 h-16 bg-surface-container-high rounded-full flex items-center justify-center mx-auto mb-4 text-outline">
-          <ShoppingBag className="w-8 h-8" />
+      <div className="py-16 sm:py-20 text-center max-w-md mx-auto p-6 sm:p-8 bg-surface-container-lowest rounded-3xl border border-outline-variant/30 shadow-soft">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 bg-surface-container-high rounded-full flex items-center justify-center mx-auto mb-4 text-outline">
+          <ShoppingBag className="w-7 h-7 sm:w-8 sm:h-8" />
         </div>
-        <h3 className="text-lg font-bold text-on-background mb-1">No products found</h3>
+        <h3 className="text-base sm:text-lg font-bold text-on-background mb-1">No products found</h3>
         <p className="text-xs text-secondary mb-4">
           Try adjusting your search criteria, category, or filter options.
         </p>
@@ -45,7 +45,7 @@ export const ProductGrid = ({ products = [], isLoading = false, error = null, on
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-6">
       {products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}

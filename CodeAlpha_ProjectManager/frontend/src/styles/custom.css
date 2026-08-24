@@ -506,3 +506,64 @@ h1, h2, h3, h4, h5, h6, .font-headline {
   border-radius: 16px;
   padding: 3.5rem 2rem;
 }
+
+/* ==========================================================================
+   Mobile UI Enhancements (Stitch Kinetic Logic Mobile Spec)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .header-container {
+    padding: 0 1rem;
+  }
+
+  .header-brand-text {
+    font-size: 1.05rem;
+  }
+
+  .kanban-board-container {
+    gap: 0.75rem;
+    padding-bottom: 2rem;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scroll-padding: 0.5rem;
+  }
+
+  .kanban-column {
+    min-width: calc(100vw - 36px);
+    max-width: calc(100vw - 36px);
+    scroll-snap-align: center;
+    padding: 0.75rem;
+  }
+
+  .task-item-card {
+    padding: 0.875rem;
+  }
+
+  .btn-primary-pm, .btn-saas-primary, .btn-saas-secondary {
+    font-size: 0.82rem;
+    height: 36px;
+    padding: 0 0.85rem;
+  }
+
+  .mobile-fab-btn {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 52px;
+    height: 52px;
+    border-radius: 50% !important;
+    background: var(--primary);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.5);
+    z-index: 1040;
+    border: none;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .mobile-fab-btn:active {
+    transform: scale(0.92);
+  }
+}
+

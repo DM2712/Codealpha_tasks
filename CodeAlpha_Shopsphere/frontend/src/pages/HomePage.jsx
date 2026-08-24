@@ -112,17 +112,17 @@ export const HomePage = () => {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+        <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
           {featuredCategoryShortcuts.map((cat) => (
             <button
               key={cat.slug}
               onClick={() => navigate(`/products?category=${cat.slug}`)}
-              className="group p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 hover:border-primary-container/50 shadow-soft hover:shadow-card transition-all flex flex-col items-center text-center space-y-2"
+              className="group p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-surface-container-lowest border border-outline-variant/30 hover:border-primary-container/50 shadow-soft hover:shadow-card transition-all flex flex-col items-center text-center space-y-1 sm:space-y-2 active:scale-95"
             >
-              <div className={`w-14 h-14 rounded-2xl ${cat.color} flex items-center justify-center text-2xl group-hover:scale-110 transition-transform`}>
+              <div className={`w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl ${cat.color} flex items-center justify-center text-lg sm:text-2xl group-hover:scale-110 transition-transform`}>
                 {cat.icon}
               </div>
-              <span className="text-xs font-bold text-on-background group-hover:text-primary transition-colors">
+              <span className="text-[11px] sm:text-xs font-bold text-on-background group-hover:text-primary transition-colors line-clamp-1">
                 {cat.name}
               </span>
             </button>
