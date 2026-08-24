@@ -44,22 +44,12 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
-export const productService = {
-  getProducts: async (params = {}) => {
-    const response = await api.get('/products', { params });
-    return response.data;
-  },
-
-  getProductById: async (id) => {
-    const response = await api.get(`/products/${id}`);
-    return response.data;
-  },
-
-  getCategories: async () => {
-    const response = await api.get('/products/categories');
-    return response.data;
-  }
-};
+// ============================================================
+// productService — fetches directly from the external product
+// API on the client side (no backend needed). This makes the
+// app work on Vercel without any Node.js server.
+// ============================================================
+export { clientProductService as productService } from './productClient';
 
 export const orderService = {
   createOrder: async (orderData) => {
