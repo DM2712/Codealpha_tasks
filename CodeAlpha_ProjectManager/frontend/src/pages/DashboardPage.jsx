@@ -79,6 +79,7 @@ const DashboardPage = ({ isCreateModalOpen, setIsCreateModalOpen }) => {
   const totalTasks = projects.reduce((acc, p) => acc + (p.taskStats?.total || 0), 0);
   const totalDoneTasks = projects.reduce((acc, p) => acc + (p.taskStats?.done || 0), 0);
   const totalInProgressTasks = projects.reduce((acc, p) => acc + (p.taskStats?.inProgress || 0), 0);
+  const overallProgressPercentage = totalTasks > 0 ? Math.round((totalDoneTasks / totalTasks) * 100) : 0;
 
   return (
     <div className="container-fluid px-3 px-md-5 py-4 max-w-[1440px] pb-5">
@@ -119,7 +120,7 @@ const DashboardPage = ({ isCreateModalOpen, setIsCreateModalOpen }) => {
       {/* Stats Grid (Stitch Dashboard KPI Cards) */}
       <div className="row g-2 g-sm-3 mb-4">
         {/* Stat 1 */}
-        <div className="col-6 col-lg-3">
+        <div className="col-6 col-md-4 col-xl">
           <div className="pm-card-static p-2.5 p-sm-3 bg-white d-flex align-items-center gap-2.5 gap-sm-3 h-100">
             <div className="p-2 p-sm-2.5 rounded-3 bg-primary-subtle text-primary shrink-0">
               <FolderKanban size={20} />
@@ -132,7 +133,7 @@ const DashboardPage = ({ isCreateModalOpen, setIsCreateModalOpen }) => {
         </div>
 
         {/* Stat 2 */}
-        <div className="col-6 col-lg-3">
+        <div className="col-6 col-md-4 col-xl">
           <div className="pm-card-static p-2.5 p-sm-3 bg-white d-flex align-items-center gap-2.5 gap-sm-3 h-100">
             <div className="p-2 p-sm-2.5 rounded-3 bg-warning-subtle text-warning-emphasis shrink-0">
               <Clock size={20} />
@@ -145,7 +146,7 @@ const DashboardPage = ({ isCreateModalOpen, setIsCreateModalOpen }) => {
         </div>
 
         {/* Stat 3 */}
-        <div className="col-6 col-lg-3">
+        <div className="col-6 col-md-4 col-xl">
           <div className="pm-card-static p-2.5 p-sm-3 bg-white d-flex align-items-center gap-2.5 gap-sm-3 h-100">
             <div className="p-2 p-sm-2.5 rounded-3 bg-success-subtle text-success shrink-0">
               <CheckCircle2 size={20} />
@@ -158,7 +159,7 @@ const DashboardPage = ({ isCreateModalOpen, setIsCreateModalOpen }) => {
         </div>
 
         {/* Stat 4 */}
-        <div className="col-6 col-lg-3">
+        <div className="col-6 col-md-6 col-xl">
           <div className="pm-card-static p-2.5 p-sm-3 bg-white d-flex align-items-center gap-2.5 gap-sm-3 h-100">
             <div className="p-2 p-sm-2.5 rounded-3 bg-info-subtle text-info-emphasis shrink-0">
               <Layers size={20} />
@@ -166,6 +167,31 @@ const DashboardPage = ({ isCreateModalOpen, setIsCreateModalOpen }) => {
             <div className="min-w-0">
               <div className="text-secondary small fw-medium text-truncate" style={{ fontSize: '0.75rem' }}>Total Tasks</div>
               <h4 className="fw-bold mb-0 font-mono text-dark" style={{ fontSize: '1.25rem' }}>{totalTasks}</h4>
+            </div>
+          </div>
+        </div>
+
+        {/* Stat 5: Overall Completion Rate */}
+        <div className="col-12 col-md-6 col-xl">
+          <div className="pm-card-static p-2.5 p-sm-3 bg-white d-flex align-items-center gap-2.5 gap-sm-3 h-100">
+            <div className="p-2 p-sm-2.5 rounded-3 text-success shrink-0" style={{ backgroundColor: '#ecfdf5' }}>
+              <Sparkles size={20} className="text-success" />
+            </div>
+            <div className="min-w-0 flex-grow-1">
+              <div className="d-flex justify-content-between align-items-center">
+                <div className="text-secondary small fw-medium text-truncate" style={{ fontSize: '0.75rem' }}>Completion Rate</div>
+                <span className="small font-mono fw-bold text-success">{overallProgressPercentage}%</span>
+              </div>
+              <div className="progress mt-1.5" style={{ height: '5px', borderRadius: '4px', backgroundColor: '#e2e8f0' }}>
+                <div
+                  className="progress-bar bg-success"
+                  role="progressbar"
+                  style={{ width: `${overallProgressPercentage}%`, transition: 'width 0.3s ease' }}
+                  aria-valuenow={overallProgressPercentage}
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                ></div>
+              </div>
             </div>
           </div>
         </div>

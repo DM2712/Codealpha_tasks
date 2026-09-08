@@ -92,34 +92,40 @@ const ProfilePage = () => {
                     </tr>
                   </thead>
                   <tbody className="small">
-                    {projects.map((proj) => (
-                      <tr key={proj.id}>
-                        <td className="fw-bold">{proj.name}</td>
-                        <td>
-                          <span
-                            className={`badge ${
-                              proj.isOwner ? 'bg-primary' : 'bg-secondary'
-                            } text-capitalize`}
-                          >
-                            {proj.isOwner ? 'Owner' : proj.userRole}
-                          </span>
-                        </td>
-                        <td>
-                          <div className="d-flex align-items-center gap-2">
-                            <div className="progress flex-grow-1" style={{ height: '6px', width: '80px' }}>
-                              <div
-                                className="progress-bar bg-success"
-                                style={{ width: `${proj.taskStats?.progressPercentage || 0}%` }}
-                              ></div>
-                            </div>
-                            <span className="text-muted" style={{ fontSize: '0.75rem' }}>
-                              {proj.taskStats?.done || 0}/{proj.taskStats?.total || 0}
+                    {projects.map((proj) => {
+                      const total = proj.taskStats?.total || 0;
+                      const done = proj.taskStats?.done || 0;
+                      const progress = total > 0 ? Math.round((done / total) * 100) : (proj.taskStats?.progressPercentage || 0);
+
+                      return (
+                        <tr key={proj.id}>
+                          <td className="fw-bold">{proj.name}</td>
+                          <td>
+                            <span
+                              className={`badge ${
+                                proj.isOwner ? 'bg-primary' : 'bg-secondary'
+                              } text-capitalize`}
+                            >
+                              {proj.isOwner ? 'Owner' : proj.userRole}
                             </span>
-                          </div>
-                        </td>
-                        <td className="text-muted">{proj.memberCount || 1} members</td>
-                      </tr>
-                    ))}
+                          </td>
+                          <td>
+                            <div className="d-flex align-items-center gap-2">
+                              <div className="progress flex-grow-1" style={{ height: '6px', width: '80px', backgroundColor: '#e2e8f0' }}>
+                                <div
+                                  className={`progress-bar ${progress === 100 ? 'bg-success' : 'bg-primary'}`}
+                                  style={{ width: `${progress}%` }}
+                                ></div>
+                              </div>
+                              <span className="text-dark fw-medium font-mono" style={{ fontSize: '0.75rem' }}>
+                                {done}/{total} ({progress}%)
+                              </span>
+                            </div>
+                          </td>
+                          <td className="text-muted">{proj.memberCount || 1} members</td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
