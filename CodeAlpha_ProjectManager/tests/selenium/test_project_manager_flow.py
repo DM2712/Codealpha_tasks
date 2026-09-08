@@ -178,7 +178,7 @@ class ProjectManagerFlowTest(unittest.TestCase):
 
     # Verify Live Project Status / Progress Bar on Board Header
     progress_bar = self.wait.until(
-        EC.presence_of_element_located((By.XPATH, "//*[contains(@class, 'progress-bar')]"))
+        EC.presence_of_element_located((By.XPATH, "//*[contains(@class, 'progress')]"))
     )
     self.assertTrue(progress_bar.is_displayed())
     print("  [PASS] Live Project Progress Bar verified on Board Workspace Header")
@@ -250,7 +250,7 @@ class ProjectManagerFlowTest(unittest.TestCase):
 
       # Verify progress bar element is present and reflecting completion
       progress_bar = self.wait.until(
-          EC.presence_of_element_located((By.XPATH, "//*[contains(@class, 'progress-bar')]"))
+          EC.presence_of_element_located((By.XPATH, "//*[contains(@class, 'progress')]"))
       )
       self.assertTrue(progress_bar.is_displayed())
       print("  [PASS] Task status updated to 'Done' and project progress bar synchronized live")

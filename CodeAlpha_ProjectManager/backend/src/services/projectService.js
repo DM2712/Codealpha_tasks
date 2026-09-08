@@ -116,15 +116,22 @@ class ProjectService {
     });
 
     if (merged.length === 0) {
-      // Default initial project
-      const defaultProj = {
+      // Default initial projects
+      const defaultProj1 = {
         id: 'proj_alpha_launch_001',
         name: 'ShopSphere v2 & Mobile App',
         description: 'Next-generation e-commerce platform with Clerk authentication and Supabase integration.',
         owner_id: userId,
         created_at: new Date().toISOString(),
       };
-      merged.push(defaultProj);
+      const defaultProj2 = {
+        id: 'proj_design_system_002',
+        name: 'Kinetic Logic UI Design System',
+        description: 'Design token architecture and reusable component library.',
+        owner_id: 'user_david',
+        created_at: new Date().toISOString(),
+      };
+      merged.push(defaultProj1, defaultProj2);
     }
 
     // Enhance each project with accurate dynamic task stats & member count
@@ -149,13 +156,13 @@ class ProjectService {
         const todoTasks = tasks.filter((t) => t.status === 'todo').length;
 
         const userMembership = memberships?.find((m) => m.project_id === project.id);
-        const userRole = project.owner_id === userId ? 'owner' : userMembership?.role || 'owner';
+        const userRole = project.owner_id === userId ? 'owner' : userMembership?.role || (project.id === 'proj_design_system_002' ? 'member' : 'owner');
 
         return {
           ...project,
           userRole,
-          isOwner: project.owner_id === userId || userRole === 'owner',
-          memberCount: memberCount || 1,
+          isOwner: project.owner_id === userId,
+          memberCount: memberCount || 2,
           taskStats: {
             total: totalTasks,
             done: doneTasks,
@@ -197,6 +204,16 @@ class ProjectService {
         name: 'ShopSphere v2 & Mobile App',
         description: 'Next-generation e-commerce platform with Clerk authentication and Supabase integration.',
         owner_id: userId,
+        created_at: new Date().toISOString(),
+      };
+    }
+
+    if (!project && projectId === 'proj_design_system_002') {
+      project = {
+        id: 'proj_design_system_002',
+        name: 'Kinetic Logic UI Design System',
+        description: 'Design token architecture and reusable component library.',
+        owner_id: 'user_david',
         created_at: new Date().toISOString(),
       };
     }

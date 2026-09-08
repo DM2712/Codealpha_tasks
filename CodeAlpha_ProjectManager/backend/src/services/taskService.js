@@ -48,6 +48,40 @@ const initialTasks = [
     due_date: new Date(Date.now() + 4 * 86400000).toISOString().split('T')[0],
     created_at: new Date().toISOString(),
   },
+  // Tasks for Kinetic Logic UI Design System (2 Done, 1 In Progress = 67% complete)
+  {
+    id: 'task_ds_001',
+    project_id: 'proj_design_system_002',
+    title: 'Design Token Architecture & CSS Variables',
+    description: 'Establish typography scales, kinetic color palette, and elevation tokens.',
+    status: 'done',
+    priority: 'high',
+    assigned_to: 'user_david',
+    due_date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 'task_ds_002',
+    project_id: 'proj_design_system_002',
+    title: 'Responsive Grid & Card Primitives',
+    description: 'Build flexible grid layouts, KPI metric tiles, and progress indicators.',
+    status: 'done',
+    priority: 'medium',
+    assigned_to: 'user_alex',
+    due_date: new Date(Date.now() + 2 * 86400000).toISOString().split('T')[0],
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 'task_ds_003',
+    project_id: 'proj_design_system_002',
+    title: 'Interactive Modal & Drawer Animation Hooks',
+    description: 'Create smooth Framer-like transition utilities for slide-over panels.',
+    status: 'in_progress',
+    priority: 'high',
+    assigned_to: 'user_david',
+    due_date: new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0],
+    created_at: new Date().toISOString(),
+  },
 ];
 
 initialTasks.forEach((t) => fallbackTasks.set(t.id, t));
@@ -58,7 +92,7 @@ class TaskService {
    */
   static getFallbackTasks(projectId) {
     return Array.from(fallbackTasks.values()).filter(
-      (t) => String(t.project_id) === String(projectId) || projectId === 'proj_alpha_launch_001'
+      (t) => String(t.project_id || t.projectId) === String(projectId)
     );
   }
 

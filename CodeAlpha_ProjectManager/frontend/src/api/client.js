@@ -141,13 +141,62 @@ const getInitialFallbackTasks = () => [
     assigneeId: 'user_david',
     assigneeName: 'David Kim',
     dueDate: new Date(Date.now() + 4 * 86400000).toISOString().split('T')[0],
+  },
+  // Kinetic Logic UI Design System tasks (2 Done, 1 In Progress = 67%)
+  {
+    id: 'task_ds_001',
+    projectId: 'proj_design_system_002',
+    title: 'Design Token Architecture & CSS Variables',
+    description: 'Establish typography scales, kinetic color palette, and elevation tokens.',
+    status: 'done',
+    priority: 'high',
+    assigneeId: 'user_david',
+    assigneeName: 'David Kim',
+    dueDate: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+  },
+  {
+    id: 'task_ds_002',
+    projectId: 'proj_design_system_002',
+    title: 'Responsive Grid & Card Primitives',
+    description: 'Build flexible grid layouts, KPI metric tiles, and progress indicators.',
+    status: 'done',
+    priority: 'medium',
+    assigneeId: 'user_alex',
+    assigneeName: 'Alex Thompson',
+    dueDate: new Date(Date.now() + 2 * 86400000).toISOString().split('T')[0],
+  },
+  {
+    id: 'task_ds_003',
+    projectId: 'proj_design_system_002',
+    title: 'Interactive Modal & Drawer Animation Hooks',
+    description: 'Create smooth Framer-like transition utilities for slide-over panels.',
+    status: 'in_progress',
+    priority: 'high',
+    assigneeId: 'user_david',
+    assigneeName: 'David Kim',
+    dueDate: new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0],
   }
 ];
 
 const getStoredTasks = () => {
   try {
     const raw = localStorage.getItem(FALLBACK_TASKS_KEY);
-    return raw ? JSON.parse(raw) : getInitialFallbackTasks();
+    let tasks = raw ? JSON.parse(raw) : getInitialFallbackTasks();
+    const initialTasks = getInitialFallbackTasks();
+
+    // Ensure all seed tasks exist in storage
+    let modified = false;
+    initialTasks.forEach((it) => {
+      if (!tasks.some((t) => String(t.id) === String(it.id))) {
+        tasks.push(it);
+        modified = true;
+      }
+    });
+
+    if (modified) {
+      saveStoredTasks(tasks);
+    }
+    return tasks;
   } catch {
     return getInitialFallbackTasks();
   }
@@ -162,29 +211,37 @@ const saveStoredTasks = (tasks) => {
 const getStoredProjects = () => {
   try {
     const raw = localStorage.getItem(FALLBACK_PROJECTS_KEY);
-    const projects = raw ? JSON.parse(raw) : getInitialFallbackProjects();
+    let projects = raw ? JSON.parse(raw) : getInitialFallbackProjects();
+    const initialProjects = getInitialFallbackProjects();
+
+    // Ensure seed projects exist
+    initialProjects.forEach((ip) => {
+      if (!projects.some((p) => String(p.id) === String(ip.id))) {
+        projects.push(ip);
+      }
+    });
+
     const tasks = getStoredTasks();
 
     return projects.map((p) => {
       const projTasks = tasks.filter(
         (t) =>
           String(t.projectId) === String(p.id) ||
-          String(t.project_id) === String(p.id) ||
-          (p.id === 'proj_alpha_launch_001' && (!t.projectId || t.projectId === 'proj_alpha_launch_001' || t.project_id === 'proj_alpha_launch_001'))
+          String(t.project_id) === String(p.id)
       );
       const total = projTasks.length;
       const done = projTasks.filter((t) => t.status === 'done').length;
       const inProgress = projTasks.filter((t) => t.status === 'in_progress').length;
       const todo = projTasks.filter((t) => t.status === 'todo').length;
-      const progressPercentage = total > 0 ? Math.round((done / total) * 100) : 0;
+      const progressPercentage = total > 0 ? Math.round((done / total) * 100) : (p.taskStats?.progressPercentage || 0);
 
       return {
         ...p,
         taskStats: {
-          total,
-          done,
-          inProgress,
-          todo,
+          total: total > 0 ? total : (p.taskStats?.total || 0),
+          done: total > 0 ? done : (p.taskStats?.done || 0),
+          inProgress: total > 0 ? inProgress : (p.taskStats?.inProgress || 0),
+          todo: total > 0 ? todo : (p.taskStats?.todo || 0),
           progressPercentage,
         },
       };
@@ -294,7 +351,7 @@ export const getProjectTasks = async (projectId) => {
     return res.data.data;
   } catch (err) {
     const tasks = getStoredTasks();
-    return tasks.filter((t) => String(t.projectId) === String(projectId) || t.projectId === 'proj_alpha_launch_001');
+    return tasks.filter((t) => String(t.projectId || t.project_id) === String(projectId));
   }
 };
 
