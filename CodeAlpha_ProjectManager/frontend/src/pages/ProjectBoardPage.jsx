@@ -21,6 +21,7 @@ import {
   Filter,
   Trash2,
   Layers,
+  CheckCircle2,
 } from 'lucide-react';
 
 const ProjectBoardPage = () => {
@@ -206,6 +207,12 @@ const ProjectBoardPage = () => {
   const inProgressTasks = filteredTasks.filter((t) => t.status === 'in_progress');
   const doneTasks = filteredTasks.filter((t) => t.status === 'done');
 
+  const totalTasksCount = tasks.length;
+  const doneTasksCount = tasks.filter((t) => t.status === 'done').length;
+  const inProgressTasksCount = tasks.filter((t) => t.status === 'in_progress').length;
+  const todoTasksCount = tasks.filter((t) => t.status === 'todo').length;
+  const boardProgress = totalTasksCount > 0 ? Math.round((doneTasksCount / totalTasksCount) * 100) : 0;
+
   const getInitials = (name) => {
     if (!name) return '?';
     return name
@@ -220,7 +227,7 @@ const ProjectBoardPage = () => {
     <div className="container-fluid px-2 px-md-4 py-3 pb-5">
       {/* Board Header Section */}
       <div className="px-3 py-3 border-bottom bg-white rounded-3 shadow-sm mb-3 d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3">
-        <div>
+        <div className="flex-grow-1">
           <div className="d-flex align-items-center gap-2 mb-1">
             <Link to="/dashboard" className="btn btn-outline-secondary btn-sm p-1 rounded-2">
               <ArrowLeft size={16} />
@@ -249,6 +256,31 @@ const ProjectBoardPage = () => {
               {project.description}
             </p>
           )}
+
+          {/* Live Status / Progress Bar */}
+          <div className="mt-2.5 pt-2 border-top" style={{ maxWidth: '440px' }}>
+            <div className="d-flex justify-content-between align-items-center mb-1">
+              <span className="small fw-semibold text-secondary d-flex align-items-center gap-1.5" style={{ fontSize: '0.78rem' }}>
+                <CheckCircle2 size={14} className={boardProgress === 100 ? 'text-success' : 'text-primary'} />
+                <span>Project Status & Completion</span>
+              </span>
+              <span className="small font-mono fw-bold text-dark" style={{ fontSize: '0.78rem' }}>
+                {doneTasksCount}/{totalTasksCount} tasks ({boardProgress}%)
+              </span>
+            </div>
+            <div className="progress" style={{ height: '6px', borderRadius: '4px', backgroundColor: '#e2e8f0' }}>
+              <div
+                className={`progress-bar ${
+                  boardProgress === 100 ? 'bg-success' : 'bg-primary'
+                }`}
+                role="progressbar"
+                style={{ width: `${boardProgress}%`, transition: 'width 0.3s ease' }}
+                aria-valuenow={boardProgress}
+                aria-valuemin="0"
+                aria-valuemax="100"
+              ></div>
+            </div>
+          </div>
         </div>
 
         {/* Action buttons */}

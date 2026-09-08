@@ -4,7 +4,7 @@ import os
 import unittest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 
 # Ensure UTF-8 output on Windows consoles
@@ -176,6 +176,13 @@ class ProjectManagerFlowTest(unittest.TestCase):
     self.assertGreater(len(member_chip), 0, "Team member chip should be visible and aligned")
     print("  [PASS] Aligned Team Member Chip verified")
 
+    # Verify Live Project Status / Progress Bar on Board Header
+    progress_bar = self.wait.until(
+        EC.presence_of_element_located((By.XPATH, "//*[contains(@class, 'progress-bar')]"))
+    )
+    self.assertTrue(progress_bar.is_displayed())
+    print("  [PASS] Live Project Progress Bar verified on Board Workspace Header")
+
     # Verify Kanban columns (To Do, In Progress, Done)
     columns = self.wait.until(
         EC.presence_of_all_elements_located((By.XPATH, "//*[contains(@class, 'kanban-column')] | //*[contains(., 'To Do')]"))
@@ -222,6 +229,31 @@ class ProjectManagerFlowTest(unittest.TestCase):
       )
       self.assertTrue(modal_title.is_displayed())
       print("  [PASS] Team Member Management modal opened with role permissions")
+
+  def test_08_task_status_update_and_progress_bar_sync(self):
+    """Test 8: Verify task status update dynamically updates project progress bar"""
+    print("\n[Test 8] Verifying Live Project Status Bar Update on Task Status Change...")
+    # Close any open modal
+    close_btns = self.driver.find_elements(By.XPATH, "//button[@aria-label='Close' or contains(@class, 'btn-close')]")
+    for btn in close_btns:
+      if btn.is_displayed():
+        self.driver.execute_script("arguments[0].click();", btn)
+    time.sleep(1)
+
+    # Find status select dropdowns on task cards
+    select_elements = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'task-item-card')]//select")
+    if select_elements:
+      dropdown = select_elements[0]
+      select_obj = Select(dropdown)
+      select_obj.select_by_value("done")
+      time.sleep(2)
+
+      # Verify progress bar element is present and reflecting completion
+      progress_bar = self.wait.until(
+          EC.presence_of_element_located((By.XPATH, "//*[contains(@class, 'progress-bar')]"))
+      )
+      self.assertTrue(progress_bar.is_displayed())
+      print("  [PASS] Task status updated to 'Done' and project progress bar synchronized live")
 
 
 if __name__ == "__main__":

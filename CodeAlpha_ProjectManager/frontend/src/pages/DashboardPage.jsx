@@ -38,6 +38,15 @@ const DashboardPage = ({ isCreateModalOpen, setIsCreateModalOpen }) => {
 
   useEffect(() => {
     fetchProjects();
+
+    const handleFocus = () => {
+      fetchProjects();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
 
   const handleDeleteProject = async (projectId, projectName) => {

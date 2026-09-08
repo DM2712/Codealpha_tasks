@@ -144,21 +144,6 @@ const getInitialFallbackTasks = () => [
   }
 ];
 
-const getStoredProjects = () => {
-  try {
-    const raw = localStorage.getItem(FALLBACK_PROJECTS_KEY);
-    return raw ? JSON.parse(raw) : getInitialFallbackProjects();
-  } catch {
-    return getInitialFallbackProjects();
-  }
-};
-
-const saveStoredProjects = (projects) => {
-  try {
-    localStorage.setItem(FALLBACK_PROJECTS_KEY, JSON.stringify(projects));
-  } catch {}
-};
-
 const getStoredTasks = () => {
   try {
     const raw = localStorage.getItem(FALLBACK_TASKS_KEY);
@@ -171,6 +156,47 @@ const getStoredTasks = () => {
 const saveStoredTasks = (tasks) => {
   try {
     localStorage.setItem(FALLBACK_TASKS_KEY, JSON.stringify(tasks));
+  } catch {}
+};
+
+const getStoredProjects = () => {
+  try {
+    const raw = localStorage.getItem(FALLBACK_PROJECTS_KEY);
+    const projects = raw ? JSON.parse(raw) : getInitialFallbackProjects();
+    const tasks = getStoredTasks();
+
+    return projects.map((p) => {
+      const projTasks = tasks.filter(
+        (t) =>
+          String(t.projectId) === String(p.id) ||
+          String(t.project_id) === String(p.id) ||
+          (p.id === 'proj_alpha_launch_001' && (!t.projectId || t.projectId === 'proj_alpha_launch_001' || t.project_id === 'proj_alpha_launch_001'))
+      );
+      const total = projTasks.length;
+      const done = projTasks.filter((t) => t.status === 'done').length;
+      const inProgress = projTasks.filter((t) => t.status === 'in_progress').length;
+      const todo = projTasks.filter((t) => t.status === 'todo').length;
+      const progressPercentage = total > 0 ? Math.round((done / total) * 100) : 0;
+
+      return {
+        ...p,
+        taskStats: {
+          total,
+          done,
+          inProgress,
+          todo,
+          progressPercentage,
+        },
+      };
+    });
+  } catch {
+    return getInitialFallbackProjects();
+  }
+};
+
+const saveStoredProjects = (projects) => {
+  try {
+    localStorage.setItem(FALLBACK_PROJECTS_KEY, JSON.stringify(projects));
   } catch {}
 };
 
@@ -283,12 +309,12 @@ export const getTask = async (taskId) => {
 };
 
 export const createTask = async (taskData) => {
+  let createdTask = null;
   try {
     const res = await api.post('/tasks', taskData);
-    return res.data.data;
+    createdTask = res.data.data;
   } catch (err) {
-    const tasks = getStoredTasks();
-    const newTask = {
+    createdTask = {
       id: `task_${Date.now()}`,
       projectId: taskData.projectId,
       title: taskData.title,
@@ -300,34 +326,42 @@ export const createTask = async (taskData) => {
       dueDate: taskData.dueDate || null,
       createdAt: new Date().toISOString(),
     };
-    const updated = [...tasks, newTask];
-    saveStoredTasks(updated);
-    return newTask;
   }
+  const tasks = getStoredTasks();
+  const existingIdx = tasks.findIndex((t) => String(t.id) === String(createdTask.id));
+  if (existingIdx >= 0) {
+    tasks[existingIdx] = createdTask;
+  } else {
+    tasks.push(createdTask);
+  }
+  saveStoredTasks(tasks);
+  return createdTask;
 };
 
 export const updateTask = async (taskId, taskData) => {
+  let updatedTask = null;
   try {
     const res = await api.put(`/tasks/${taskId}`, taskData);
-    return res.data.data;
+    updatedTask = res.data.data;
   } catch (err) {
-    const tasks = getStoredTasks();
-    const updated = tasks.map((t) => (String(t.id) === String(taskId) ? { ...t, ...taskData } : t));
-    saveStoredTasks(updated);
-    return updated.find((t) => String(t.id) === String(taskId));
+    updatedTask = { id: taskId, ...taskData };
   }
+  const tasks = getStoredTasks();
+  const updatedList = tasks.map((t) =>
+    String(t.id) === String(taskId) ? { ...t, ...taskData, ...(updatedTask || {}) } : t
+  );
+  saveStoredTasks(updatedList);
+  return updatedTask || { id: taskId, ...taskData };
 };
 
 export const deleteTask = async (taskId) => {
   try {
-    const res = await api.delete(`/tasks/${taskId}`);
-    return res.data;
-  } catch (err) {
-    const tasks = getStoredTasks();
-    const updated = tasks.filter((t) => String(t.id) !== String(taskId));
-    saveStoredTasks(updated);
-    return { success: true };
-  }
+    await api.delete(`/tasks/${taskId}`);
+  } catch (err) {}
+  const tasks = getStoredTasks();
+  const updated = tasks.filter((t) => String(t.id) !== String(taskId));
+  saveStoredTasks(updated);
+  return { success: true };
 };
 
 // ================= Comments API =================

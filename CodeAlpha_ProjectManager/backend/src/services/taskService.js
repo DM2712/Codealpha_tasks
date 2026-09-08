@@ -1,5 +1,4 @@
 const supabase = require('../config/supabase');
-const ProjectService = require('./projectService');
 
 const fallbackTasks = new Map();
 
@@ -55,11 +54,12 @@ initialTasks.forEach((t) => fallbackTasks.set(t.id, t));
 
 class TaskService {
   /**
-   * Helper to verify user membership in a project
+   * Helper to retrieve fallback tasks for a project
    */
-  static async verifyProjectAccess(projectId, userId) {
-    const project = await ProjectService.getProjectById(projectId, userId);
-    return project;
+  static getFallbackTasks(projectId) {
+    return Array.from(fallbackTasks.values()).filter(
+      (t) => String(t.project_id) === String(projectId) || projectId === 'proj_alpha_launch_001'
+    );
   }
 
   /**
@@ -98,15 +98,15 @@ class TaskService {
             status: taskStatus,
             priority: taskPriority,
             due_date: due_date || null,
+            created_by: userId,
           },
         ])
         .select()
         .single();
 
       if (error) throw error;
-      return await this.getTaskById(task.id, userId);
-    } catch (err) {
-      console.warn(`[TaskService] Supabase insert warning (${err.message}). Storing in local fallback.`);
+      return task;
+    } catch {
       const newTask = {
         id: `task_${Date.now()}`,
         project_id: projectId,
@@ -116,6 +116,7 @@ class TaskService {
         status: taskStatus,
         priority: taskPriority,
         due_date: due_date || null,
+        created_by: userId,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         assignee: {
@@ -146,13 +147,15 @@ class TaskService {
       dbTasks = tasks || [];
     } catch {}
 
-    const localTasks = Array.from(fallbackTasks.values()).filter(
-      (t) => String(t.project_id) === String(projectId) || projectId === 'proj_alpha_launch_001'
-    );
+    const localTasks = TaskService.getFallbackTasks(projectId);
 
     const merged = [...dbTasks];
     localTasks.forEach((lt) => {
-      if (!merged.some((mt) => String(mt.id) === String(lt.id))) {
+      const existingIndex = merged.findIndex((mt) => String(mt.id) === String(lt.id));
+      if (existingIndex >= 0) {
+        // Prefer the latest update
+        merged[existingIndex] = { ...merged[existingIndex], ...lt };
+      } else {
         merged.push(lt);
       }
     });
@@ -209,9 +212,17 @@ class TaskService {
    * Update task
    */
   static async updateTask(taskId, updates, userId) {
+    let projectId = updates?.project_id || updates?.projectId;
+
     if (fallbackTasks.has(taskId)) {
       const current = fallbackTasks.get(taskId);
-      const updated = { ...current, ...updates, updated_at: new Date().toISOString() };
+      projectId = current.project_id || projectId;
+      const updated = {
+        ...current,
+        ...updates,
+        project_id: projectId,
+        updated_at: new Date().toISOString(),
+      };
       fallbackTasks.set(taskId, updated);
       return updated;
     }
@@ -219,26 +230,45 @@ class TaskService {
     try {
       const { data, error } = await supabase
         .from('tasks')
-        .update(updates)
+        .update({
+          ...updates,
+          updated_at: new Date().toISOString(),
+        })
         .eq('id', taskId)
         .select()
         .single();
       if (error) throw error;
-      return data;
-    } catch {
-      return { id: taskId, ...updates };
-    }
+      if (data) {
+        fallbackTasks.set(taskId, data);
+        return data;
+      }
+    } catch {}
+
+    const fallbackUpdated = {
+      id: taskId,
+      project_id: projectId,
+      ...updates,
+      updated_at: new Date().toISOString(),
+    };
+    fallbackTasks.set(taskId, fallbackUpdated);
+    return fallbackUpdated;
   }
 
   /**
    * Delete task
    */
   static async deleteTask(taskId, userId) {
-    fallbackTasks.delete(taskId);
+    let projectId = null;
+    if (fallbackTasks.has(taskId)) {
+      projectId = fallbackTasks.get(taskId)?.project_id;
+      fallbackTasks.delete(taskId);
+    }
     try {
+      const { data } = await supabase.from('tasks').select('project_id').eq('id', taskId).single();
+      if (data) projectId = data.project_id || projectId;
       await supabase.from('tasks').delete().eq('id', taskId);
     } catch {}
-    return { success: true };
+    return { success: true, projectId };
   }
 }
 

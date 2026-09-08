@@ -1,6 +1,6 @@
 const supabase = require('../config/supabase');
 
-// Resilient memory store for demo sessions and environments without service role bypass
+// Resilient memory store for environments without service role bypass
 const fallbackProjects = new Map();
 const fallbackMembers = new Map();
 
@@ -43,9 +43,7 @@ class ProjectService {
       ]);
 
       return project;
-    } catch (err) {
-      console.warn(`[ProjectService] Supabase insert warning (${err.message}). Using resilient local store.`);
-      
+    } catch {
       const newProj = {
         id: `proj_${Date.now()}`,
         name: name.trim(),
@@ -70,6 +68,9 @@ class ProjectService {
    * Get all projects accessible to the user (as owner or member)
    */
   static async getUserProjects(userId) {
+    // Dynamic import to avoid circular dependency
+    const TaskService = require('./taskService');
+
     let supabaseProjects = [];
     let memberships = [];
 
@@ -109,32 +110,27 @@ class ProjectService {
 
     const merged = [...supabaseProjects];
     allLocal.forEach((lp) => {
-      if (!merged.some((mp) => mp.id === lp.id)) {
+      if (!merged.some((mp) => String(mp.id) === String(lp.id))) {
         merged.unshift(lp);
       }
     });
 
     if (merged.length === 0) {
-      // Default sample project for immediate exploration if empty
+      // Default initial project
       const defaultProj = {
         id: 'proj_alpha_launch_001',
         name: 'ShopSphere v2 & Mobile App',
         description: 'Next-generation e-commerce platform with Clerk authentication and Supabase integration.',
         owner_id: userId,
-        userRole: 'owner',
-        isOwner: true,
-        memberCount: 3,
-        taskStats: { total: 4, done: 1, inProgress: 2, todo: 1, progressPercentage: 25 },
         created_at: new Date().toISOString(),
       };
-      return [defaultProj];
+      merged.push(defaultProj);
     }
 
-    // Enhance each project with task stats & member count
+    // Enhance each project with accurate dynamic task stats & member count
     const enrichedProjects = await Promise.all(
       merged.map(async (project) => {
         let memberCount = 1;
-        let tasks = [];
 
         try {
           const { count } = await supabase
@@ -142,18 +138,15 @@ class ProjectService {
             .select('*', { count: 'exact', head: true })
             .eq('project_id', project.id);
           memberCount = count || 1;
-
-          const { data: dbTasks } = await supabase
-            .from('tasks')
-            .select('id, status')
-            .eq('project_id', project.id);
-          tasks = dbTasks || [];
         } catch {}
 
-        const totalTasks = tasks ? tasks.length : 0;
-        const doneTasks = tasks ? tasks.filter((t) => t.status === 'done').length : 0;
-        const inProgressTasks = tasks ? tasks.filter((t) => t.status === 'in_progress').length : 0;
-        const todoTasks = tasks ? tasks.filter((t) => t.status === 'todo').length : 0;
+        // Fetch tasks accurately from both Supabase and local store
+        const tasks = await TaskService.getProjectTasks(project.id, userId);
+
+        const totalTasks = tasks.length;
+        const doneTasks = tasks.filter((t) => t.status === 'done').length;
+        const inProgressTasks = tasks.filter((t) => t.status === 'in_progress').length;
+        const todoTasks = tasks.filter((t) => t.status === 'todo').length;
 
         const userMembership = memberships?.find((m) => m.project_id === project.id);
         const userRole = project.owner_id === userId ? 'owner' : userMembership?.role || 'owner';
@@ -181,6 +174,8 @@ class ProjectService {
    * Get project details and members by project ID
    */
   static async getProjectById(projectId, userId) {
+    const TaskService = require('./taskService');
+
     let project = null;
 
     try {
@@ -212,6 +207,12 @@ class ProjectService {
       throw error;
     }
 
+    const tasks = await TaskService.getProjectTasks(projectId, userId);
+    const totalTasks = tasks.length;
+    const doneTasks = tasks.filter((t) => t.status === 'done').length;
+    const inProgressTasks = tasks.filter((t) => t.status === 'in_progress').length;
+    const todoTasks = tasks.filter((t) => t.status === 'todo').length;
+
     return {
       ...project,
       isOwner: true,
@@ -221,6 +222,13 @@ class ProjectService {
         { userId: 'user_sarah', name: 'Sarah Connor', role: 'member' },
         { userId: 'user_david', name: 'David Kim', role: 'member' },
       ],
+      taskStats: {
+        total: totalTasks,
+        done: doneTasks,
+        inProgress: inProgressTasks,
+        todo: todoTasks,
+        progressPercentage: totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0,
+      },
     };
   }
 
